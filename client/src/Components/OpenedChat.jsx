@@ -1,0 +1,137 @@
+import { useEffect, useState } from "react";
+import { socket } from "../services/socketService";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import SendIcon from "@mui/icons-material/Send";
+
+export default function OpenedChat() {
+  // useEffect(() => {
+  //   socket.on("new_message", (msg) => {
+  //     setMessages((prev) => [...prev, msg]);
+  //   });
+
+  //   return () => {
+  //     socket.off("new_message"); // cleanup
+  //   };
+  // }, []);
+
+  // const handleSend = () => {
+  //   socket.emit("send_message", {
+  //     conversationId,
+  //     text: input,
+  //   });
+  // };
+
+  const [newMessage, setNewMessage] = useState("");
+  const [messages, setMessages] = useState([
+    {
+      sender: "User1",
+      text: "Hello!",
+      time: "2:30 PM",
+    },
+    {
+      sender: "Me",
+      text: "Hi there!",
+      time: "2:31 PM",
+    },
+    {
+      sender: "User1",
+      text: "Currently, you tell the user \"Login successful,\" but you aren't giving them a \"key\" to prove they are logged in for future requests. You need to generate a token.",
+      time: "2:32 PM",
+    },
+    {
+      sender: "Me",
+      text: "Currently, you tell the user \"Login successful,\" but you aren't giving them a \"key\" to prove they are logged in for future requests. You need to generate a token.",
+      time: "2:33 PM",
+    },
+    {
+      sender: "User1",
+      text: "Doing well!",
+      time: "2:34 PM",
+    },
+  ]);
+
+  function handleSend(msg) {
+    if (!msg.trim()) return;
+    console.log("Sending message:", msg);
+  }
+
+  return (
+    <div className="bg-gray-800 w-full flex flex-col h-screen">
+      {/* Chat Header */}
+      <div className="flex items-center h-[72px] px-4 border-b border-gray-700 bg-gray-800">
+        <div className="relative shrink-0">
+          <img
+            className="w-12 h-12 rounded-full object-cover border-2 border-gray-600"
+            src="./defaultPfp.png"
+            alt="User avatar"
+          />
+        </div>
+
+        <div className="flex flex-col flex-1 min-w-0 ml-3">
+          <h3 className="text-base font-semibold text-white truncate">USERNAME</h3>
+          <span className="text-xs text-gray-400">
+            last seen at 2:30 PM
+          </span>
+        </div>
+        <button className="p-2 hover:bg-gray-700 rounded-full transition-colors">
+          <MoreVertIcon className="text-gray-300" />
+        </button>
+      </div>
+
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto bg-gray-900 p-4">
+        <div className="flex flex-col gap-3">
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`flex ${msg.sender === "Me" ? "justify-end" : "justify-start"}`}
+            >
+              <div
+                className={`max-w-[70%] rounded-2xl px-4 py-2 ${
+                  msg.sender === "Me"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-700 text-gray-100"
+                }`}
+              >
+                <p className="text-sm break-words">{msg.text}</p>
+                <p
+                  className={`text-xs mt-1 ${
+                    msg.sender === "Me" ? "text-blue-100" : "text-gray-400"
+                  }`}
+                >
+                  {msg.time}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Message Input */}
+      <div className="flex items-center p-4 border-t border-gray-700 bg-gray-800">
+        <input
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          onKeyPress={(e) => {
+            if (e.key === "Enter") {
+              handleSend(newMessage);
+              setNewMessage("");
+            }
+          }}
+          type="text"
+          className="flex-1 bg-gray-700 text-white px-4 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+          placeholder="Type a message..."
+        />
+        <button
+          onClick={() => {
+            handleSend(newMessage);
+            setNewMessage("");
+          }}
+          className="ml-3 p-3 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors text-white"
+        >
+          <SendIcon />
+        </button>
+      </div>
+    </div>
+  );
+}
