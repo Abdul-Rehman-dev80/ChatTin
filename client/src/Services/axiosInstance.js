@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 const API_BASE_URL = "http://localhost:3000/api";
 
@@ -17,7 +17,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Add a response interceptor
@@ -30,7 +30,7 @@ api.interceptors.response.use(
       window.location.href = "/login"; // Force redirect to login
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router";
-import { registerUser } from "../services/authService";
+import { registerUser } from "../Services/authService";
 
 export default function Register() {
   const navigate = useNavigate();

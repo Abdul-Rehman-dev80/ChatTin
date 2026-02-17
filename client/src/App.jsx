@@ -7,6 +7,7 @@ import Setting from "./Pages/Setting";
 import { ToastContainer } from "react-toastify";
 import PageNotFound from "./Components/PageNotFound";
 import AuthProvider from "./Contexts/AuthContext";
+import ProtectedRoutes from "./helpers/ProtectedRoutes";
 
 function App() {
   return (
@@ -14,11 +15,32 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/setting" element={<Setting />} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoutes>
+                  <Home />
+                </ProtectedRoutes>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoutes>
+                  <Profile />
+                </ProtectedRoutes>
+              }
+            />
+            <Route
+              path="/setting"
+              element={
+                <ProtectedRoutes>
+                  <Setting />
+                </ProtectedRoutes>
+              }
+            />
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </BrowserRouter>

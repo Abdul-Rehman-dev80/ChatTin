@@ -57,7 +57,7 @@ const loginUser = async (req, res) => {
       },
     });
     if (!user) {
-      return res.status(404).json({ message: "User doesn't exists" });
+      return res.status(404).json({ message: "Invalid phone number or password" });
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
@@ -77,6 +77,21 @@ const loginUser = async (req, res) => {
       message: "Internal server error",
       error: error.message,
     });
+  }
+};
+
+const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findByPk(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    return res.status(200).json(user);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
 };
 
@@ -126,4 +141,4 @@ const getUsers = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, getUsers };
+export { registerUser, loginUser, getUserById, getUsers };

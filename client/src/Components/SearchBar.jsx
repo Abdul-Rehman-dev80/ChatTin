@@ -10,7 +10,6 @@ export default function SearchBar({ onSearchChange }) {
       onSearchChange(search);
     }, 500);
 
-    // Cleanup: clear timer if user types again
     return () => clearTimeout(timer);
   }, [search, onSearchChange]);
 

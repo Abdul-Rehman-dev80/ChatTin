@@ -2,8 +2,8 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router";
 import { toast } from "react-toastify";
-import { loginUser } from "../services/authService";
-import { reconnectSocket } from "../services/socketService";
+import { loginUser } from "../Services/authService";
+import { reconnectSocket } from "../Services/socketService";
 import { useAuth } from "../Contexts/AuthContext";
 
 export default function Login() {

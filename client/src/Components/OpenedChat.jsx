@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { socket } from "../services/socketService";
+import { socket } from "../Services/socketService";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SendIcon from "@mui/icons-material/Send";
 

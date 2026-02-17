@@ -11,3 +11,8 @@ export const getUsers = async ({ search = "", pageParam = 1 }) => {
   });
   return res.data; // Return full response with users, currentPage, totalPages, etc.
 };
+
+export const getUserById = async (id) => {
+  const res = await api.get(`/getUserById/${id}`);
+  return res.data;
+};
