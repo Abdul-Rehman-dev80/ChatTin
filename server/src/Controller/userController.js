@@ -80,39 +80,50 @@ const loginUser = async (req, res) => {
   }
 };
 
-const getAllUsers = async (req, res) => {
+const getUsers = async (req, res) => {
   try {
-    const users = await User.findAll({
-      attributes: {
-        exclude: ["password"], // Exclude password field for security
-      },
+    // 1. Extract Query Params
+    // useInfiniteQuery sends these as ?search=...&page=...
+    const { search = "", page = 1, limit = 20 } = req.query;
+
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const offset = (pageNum - 1) * limitNum;
+
+    // 2. Build Search Logic
+    let whereClause = {};
+    if (search) {
+      whereClause = {
+        [Op.or]: [
+          { username: { [Op.iLike]: `%${search}%` } },
+          { phone: { [Op.iLike]: `%${search}%` } },
+        ],
+      };
+    }
+
+    // 3. Execute Query
+    const { count, rows: users } = await User.findAndCountAll({
+      where: whereClause,
+      limit: limitNum,
+      offset: offset,
+      order: [["createdAt", "DESC"]],
     });
-    return res.status(200).json({ users });
+
+    // 4. Calculate Metadata
+    const totalPages = Math.ceil(count / limitNum);
+
+    // 5. Send Response
+    return res.status(200).json({
+      users, // The array of users for the current page
+      currentPage: pageNum,
+      totalPages: totalPages,
+      totalUsers: count,
+    });
   } catch (error) {
-    return res.status(500).json({
-      message: "Internal server error",
-      error: error.message,
-    });
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
 };
 
-const searchUser = async (req, res) => {
-  try {
-    const { username, phone } = req.body;
-    const users = await User.findAll({
-      where: {
-        [Op.or]: [
-          { username: { [Op.iLike]: `%${username}%` } },
-          { phone: { [Op.iLike]: `%${phone}%` } },
-        ],
-      },
-    });
-    return res.status(200).json({ users });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Internal server error",
-      error: error.message,
-    });
-  }
-};
-export { registerUser, loginUser, getAllUsers, searchUser };
+export { registerUser, loginUser, getUsers };

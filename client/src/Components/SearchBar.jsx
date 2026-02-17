@@ -1,29 +1,23 @@
 import SearchIcon from "@mui/icons-material/Search";
-import { useEffect, useState } from "react";
-import { searchUser } from "../Services/usersService";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 
-export default function SearchBar() {
+export default function SearchBar({ onSearchChange }) {
   const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
 
+  // Debounce: wait 500ms after user stops typing before updating search
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 500);
+    const timer = setTimeout(() => {
+      onSearchChange(search);
+    }, 500);
+
+    // Cleanup: clear timer if user types again
     return () => clearTimeout(timer);
-  }, [search]);
-
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["searchResults", debouncedSearch],
-    queryFn: () => searchUser(debouncedSearch, debouncedSearch),
-    enabled: debouncedSearch.trim() !== "",
-  });
-
-  console.log("Search results:", data);
+  }, [search, onSearchChange]);
 
   return (
     <div className="bg-gray-800 rounded-full py-2 px-4 flex justify-between items-center">
       <input
-        className="bg-transparent outline-none text-white"
+        className="bg-transparent outline-none text-white flex-1"
         type="text"
         placeholder="Search"
         value={search}
