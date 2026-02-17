@@ -1,9 +1,17 @@
 import User from "../Model/User.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { Op } from "sequelize";
 
 const registerUser = async (req, res) => {
   try {
     const { username, phone, email, password } = req.body;
+    
+    // Check if required fields are provided
+    if (!phone || !password) {
+      return res.status(400).json({ message: "Phone and password are required" });
+    }
+    
     const hashedPassword = await bcrypt.hash(password, 10);
     const userExists = await User.findOne({
       where: {
@@ -33,6 +41,12 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { phone, password } = req.body;
+    
+    // Check if required fields are provided
+    if (!phone || !password) {
+      return res.status(400).json({ message: "Phone and password are required" });
+    }
+    
     const user = await User.findOne({
       where: {
         phone,
@@ -45,7 +59,15 @@ const loginUser = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(400).json({ message: "Invalid phone or password" });
     }
-    return res.status(200).json({ message: "Login successful" });
+    // Check if JWT_SECRET is set
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ message: "Server configuration error" });
+    }
+    
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "2h",
+    });
+    return res.status(200).json({ message: "Login successful", token });
   } catch (error) {
     return res.status(500).json({
       message: "Internal server error",
@@ -54,4 +76,29 @@ const loginUser = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser };
+const searchUser = async (req, res) => {
+  try {
+    const { query } = req.query;
+    
+    // Check if query is provided
+    if (!query) {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+    
+    const users = await User.findAll({
+      where: {
+        username: {
+          [Op.iLike]: `%${query}%`,
+        },
+      },
+    });
+    return res.status(200).json({ users });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+export { registerUser, loginUser, searchUser };

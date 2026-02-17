@@ -1,15 +1,17 @@
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { toast } from "react-toastify";
 import { loginUser } from "../services/authService";
-import { socket } from "../services/socketService";
+import { reconnectSocket } from "../services/socketService";
+import { useAuth } from "../Contexts/AuthContext";
 
 export default function Login() {
   const [formData, setFormData] = useState({
     phone: "",
     password: "",
   });
+  const { setCurrentUser } = useAuth();
 
   const navigate = useNavigate();
 
@@ -25,11 +27,23 @@ export default function Login() {
     mutationFn: loginUser,
     onSuccess: (data) => {
       console.log("Logged in successfully!", data);
+      
+      // Validate that token exists in response
+      if (!data?.token) {
+        toast.error("Login failed: No token received", {
+          autoClose: 2000,
+          draggable: true,
+        });
+        return;
+      }
+      
+      localStorage.setItem('chat_token', data.token);
+      setCurrentUser({ phone: formData.phone, authenticated: true });
       toast.success("Logged in successfully!", {
         autoClose: 2000,
         draggable: true,
       });
-      socket.connect();
+      reconnectSocket();
       navigate("/");
     },
     onError: (err) => {
@@ -96,9 +110,9 @@ export default function Login() {
 
         <p className="text-sm text-gray-400 text-center mt-4">
           Don't have an account?{" "}
-          <a href="/register" className="text-blue-500 hover:text-blue-400">
+          <Link to="/register" className="text-blue-500 hover:text-blue-400">
             Register
-          </a>
+          </Link>
         </p>
       </form>
     </div>

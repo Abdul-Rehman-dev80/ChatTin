@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { registerUser } from "../services/authService";
 
 export default function Register() {
@@ -30,6 +30,7 @@ export default function Register() {
         autoClose: 2000,
         draggable: true,
       });
+      navigate("/login");
     },
     onError: (err) => {
       const msg = err.response?.data?.message || "Registration failed";
@@ -56,7 +57,6 @@ export default function Register() {
     }
 
     mutation.mutate(formData);
-    navigate("/login");
   };
 
   return (
@@ -126,9 +126,9 @@ export default function Register() {
 
         <p className="text-sm text-gray-400 text-center mt-4">
           Already have an account?{" "}
-          <a href="/login" className="text-blue-500 hover:text-blue-400">
+          <Link to="/login" className="text-blue-500 hover:text-blue-400">
             Login
-          </a>
+          </Link>
         </p>
       </form>
     </div>

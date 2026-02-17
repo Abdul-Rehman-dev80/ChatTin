@@ -15,10 +15,16 @@ const sequelize = new Sequelize(
 
 async function dbConnectionCheck() {
   try {
+    // Check if required environment variables are set
+    if (!process.env.DB_NAME || !process.env.DB_USER || !process.env.DB_PASSWORD || !process.env.DB_HOST) {
+      throw new Error("Missing required database environment variables");
+    }
+    
     await sequelize.authenticate();
     console.log("Connection has been established successfully");
   } catch (error) {
-    console.log("Unable to connect to the database", error);
+    console.error("Unable to connect to the database:", error.message);
+    throw error; // Re-throw to stop server startup if DB connection fails
   }
 }
 
