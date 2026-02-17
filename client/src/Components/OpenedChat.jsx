@@ -4,23 +4,6 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SendIcon from "@mui/icons-material/Send";
 
 export default function OpenedChat() {
-  // useEffect(() => {
-  //   socket.on("new_message", (msg) => {
-  //     setMessages((prev) => [...prev, msg]);
-  //   });
-
-  //   return () => {
-  //     socket.off("new_message"); // cleanup
-  //   };
-  // }, []);
-
-  // const handleSend = () => {
-  //   socket.emit("send_message", {
-  //     conversationId,
-  //     text: input,
-  //   });
-  // };
-
   const [newMessage, setNewMessage] = useState("");
   const [messages, setMessages] = useState([
     {
@@ -35,12 +18,12 @@ export default function OpenedChat() {
     },
     {
       sender: "User1",
-      text: "Currently, you tell the user \"Login successful,\" but you aren't giving them a \"key\" to prove they are logged in for future requests. You need to generate a token.",
+      text: 'Sup.',
       time: "2:32 PM",
     },
     {
       sender: "Me",
-      text: "Currently, you tell the user \"Login successful,\" but you aren't giving them a \"key\" to prove they are logged in for future requests. You need to generate a token.",
+      text: 'How u doin',
       time: "2:33 PM",
     },
     {
@@ -68,10 +51,10 @@ export default function OpenedChat() {
         </div>
 
         <div className="flex flex-col flex-1 min-w-0 ml-3">
-          <h3 className="text-base font-semibold text-white truncate">USERNAME</h3>
-          <span className="text-xs text-gray-400">
-            last seen at 2:30 PM
-          </span>
+          <h3 className="text-base font-semibold text-white truncate">
+            USERNAME
+          </h3>
+          <span className="text-xs text-gray-400">last seen at 2:30 PM</span>
         </div>
         <button className="p-2 hover:bg-gray-700 rounded-full transition-colors">
           <MoreVertIcon className="text-gray-300" />

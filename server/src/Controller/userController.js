@@ -6,12 +6,14 @@ import { Op } from "sequelize";
 const registerUser = async (req, res) => {
   try {
     const { username, phone, email, password } = req.body;
-    
+
     // Check if required fields are provided
     if (!phone || !password) {
-      return res.status(400).json({ message: "Phone and password are required" });
+      return res
+        .status(400)
+        .json({ message: "Phone and password are required" });
     }
-    
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const userExists = await User.findOne({
       where: {
@@ -41,12 +43,14 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const { phone, password } = req.body;
-    
+
     // Check if required fields are provided
     if (!phone || !password) {
-      return res.status(400).json({ message: "Phone and password are required" });
+      return res
+        .status(400)
+        .json({ message: "Phone and password are required" });
     }
-    
+
     const user = await User.findOne({
       where: {
         phone,
@@ -63,7 +67,7 @@ const loginUser = async (req, res) => {
     if (!process.env.JWT_SECRET) {
       return res.status(500).json({ message: "Server configuration error" });
     }
-    
+
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
       expiresIn: "2h",
     });
@@ -76,20 +80,11 @@ const loginUser = async (req, res) => {
   }
 };
 
-const searchUser = async (req, res) => {
+const getAllUsers = async (req, res) => {
   try {
-    const { query } = req.query;
-    
-    // Check if query is provided
-    if (!query) {
-      return res.status(400).json({ message: "Search query is required" });
-    }
-    
     const users = await User.findAll({
-      where: {
-        username: {
-          [Op.iLike]: `%${query}%`,
-        },
+      attributes: {
+        exclude: ["password"], // Exclude password field for security
       },
     });
     return res.status(200).json({ users });
@@ -101,4 +96,23 @@ const searchUser = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, searchUser };
+const searchUser = async (req, res) => {
+  try {
+    const { username, phone } = req.body;
+    const users = await User.findAll({
+      where: {
+        [Op.or]: [
+          { username: { [Op.iLike]: `%${username}%` } },
+          { phone: { [Op.iLike]: `%${phone}%` } },
+        ],
+      },
+    });
+    return res.status(200).json({ users });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+export { registerUser, loginUser, getAllUsers, searchUser };
