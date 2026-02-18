@@ -27,7 +27,7 @@ export default function Login() {
     mutationFn: loginUser,
     onSuccess: (data) => {
       console.log("Logged in successfully!", data);
-      
+
       // Validate that token exists in response
       if (!data?.token) {
         toast.error("Login failed: No token received", {
@@ -36,8 +36,8 @@ export default function Login() {
         });
         return;
       }
-      
-      localStorage.setItem('chat_token', data.token);
+
+      localStorage.setItem("chat_token", data.token);
       setCurrentUser({ phone: formData.phone, authenticated: true });
       toast.success("Logged in successfully!", {
         autoClose: 2000,
@@ -73,10 +73,15 @@ export default function Login() {
         onSubmit={handleLogin}
         className="bg-gray-800 flex flex-col p-8 rounded-xl w-[400px] shadow-2xl border border-gray-700"
       >
-        <h1 className="text-3xl font-bold mb-6 text-center text-white">ChatTin</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center text-white">
+          ChatTin
+        </h1>
         <hr className="mb-6 border-gray-700" />
 
-        <label htmlFor="phone" className="text-sm font-medium text-gray-300 mb-2">
+        <label
+          htmlFor="phone"
+          className="text-sm font-medium text-gray-300 mb-2"
+        >
           Phone Number
         </label>
         <input
@@ -88,7 +93,10 @@ export default function Login() {
           placeholder="Enter your phone number"
         />
 
-        <label htmlFor="password" className="text-sm font-medium text-gray-300 mb-2">
+        <label
+          htmlFor="password"
+          className="text-sm font-medium text-gray-300 mb-2"
+        >
           Password
         </label>
         <input
@@ -99,7 +107,7 @@ export default function Login() {
           id="password"
           placeholder="Enter your password"
         />
-        
+
         <button
           type="submit"
           disabled={mutation.isPending}
