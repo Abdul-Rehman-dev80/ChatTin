@@ -1,17 +1,17 @@
+import { SERVER_URL } from "../Services/axiosInstance.js";
+
 export default function ChatCard({ details }) {
-  // Guard against undefined or null details
-  if (!details) {
-    return null;
-  }
+  if (!details) return null;
 
   const { pfp, username, lastMessage, time } = details;
+  const avatar = pfp && pfp !== "defaultPfp.png" ? `${SERVER_URL}/${pfp}` : "/defaultPfp.png";
 
   return (
     <div className="flex items-center h-[72px] px-3 py-2 bg-gray-600 hover:bg-gray-800 active:bg-gray-800 rounded-lg cursor-pointer transition-colors mb-1">
       <div className="relative shrink-0">
         <img
           className="w-12 h-12 rounded-full object-cover border-2 border-gray-500"
-          src={pfp || "./defaultPfp.png"}
+          src={avatar}
           alt={username ? `${username} avatar` : "User avatar"}
         />
       </div>
