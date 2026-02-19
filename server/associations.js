@@ -7,12 +7,26 @@ import User from "./src/Model/User.js";
 User.belongsToMany(Conversation, {
   through: ConversationMember,
   foreignKey: "userId",
+  as: "conversations",
 });
 
 // A Conversation can have many Users
 Conversation.belongsToMany(User, {
   through: ConversationMember,
   foreignKey: "conversationId",
+  as: "users",
+});
+
+// ConversationMember belongs to Conversation (for includes)
+ConversationMember.belongsTo(Conversation, {
+  foreignKey: "conversationId",
+  as: "conversation",
+});
+
+// ConversationMember belongs to User (for includes)
+ConversationMember.belongsTo(User, {
+  foreignKey: "userId",
+  as: "user",
 });
 
 // A conversation has many messages

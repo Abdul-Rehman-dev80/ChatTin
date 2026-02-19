@@ -11,6 +11,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import router from "./src/Routes/UserRoute.js";
 import socketAuth from "./src/Middleware/authMiddleware.js";
+import conversationRouter from "./src/Routes/ConversationRoute.js";
 
 dotenv.config();
 
@@ -37,6 +38,7 @@ app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 app.use("/api", router);
+app.use("/api/conversations", conversationRouter);
 
 io.use(socketAuth);
 

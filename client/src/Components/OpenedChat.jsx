@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { socket } from "../Services/socketService";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SendIcon from "@mui/icons-material/Send";
+import { useAuth } from "../Contexts/AuthContext";
+import { SERVER_URL } from "../Services/axiosInstance";
 
-export default function OpenedChat() {
+export default function OpenedChat({ selectedConversation }) {
+  const { currentUser } = useAuth();
   const [newMessage, setNewMessage] = useState("");
   const [messages, setMessages] = useState([
     {
@@ -18,12 +21,12 @@ export default function OpenedChat() {
     },
     {
       sender: "User1",
-      text: 'Sup.',
+      text: "Sup.",
       time: "2:32 PM",
     },
     {
       sender: "Me",
-      text: 'How u doin',
+      text: "How u doin",
       time: "2:33 PM",
     },
     {
@@ -31,12 +34,71 @@ export default function OpenedChat() {
       text: "Doing well!",
       time: "2:34 PM",
     },
+    {
+      sender: "Me",
+      text: "I'm good, thanks!",
+      time: "2:35 PM",
+    },
+    {
+      sender: "User1",
+      text: "What's up?",
+      time: "2:36 PM",
+    },
+    {
+      sender: "Me",
+      text: "Nothing much, just working on a project.",
+      time: "2:37 PM",
+    },
+    {
+      sender: "User1",
+      text: "That's cool!",
+      time: "2:38 PM",
+    },
+    {
+      sender: "Me",
+      text: "Yeah, it's going well.",
+      time: "2:39 PM",
+    },
+    {
+      sender: "User1",
+      text: "That's good to hear!",
+      time: "2:40 PM",
+    },
   ]);
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView();
+  }, [messages]);
 
   function handleSend(msg) {
     if (!msg.trim()) return;
     console.log("Sending message:", msg);
+    // TODO: Implement actual message sending via socket/API
   }
+
+  // If no conversation is selected, show empty state
+  if (!selectedConversation) {
+    return (
+      <div className="bg-gray-800 w-full flex flex-col h-screen items-center justify-center">
+        <p className="text-gray-400 text-lg">Select a conversation to start chatting</p>
+      </div>
+    );
+  }
+
+  // Get the other user in the conversation (not the current user)
+  const otherUser = selectedConversation.users?.find(
+    (user) => user.id !== currentUser?.id
+  );
+
+  // Get avatar URL
+  const avatarUrl =
+    otherUser?.pfp && otherUser.pfp !== "defaultPfp.png"
+      ? `${SERVER_URL}/${otherUser.pfp}`
+      : "/defaultPfp.png";
+
+  // Get username or fallback to phone number
+  const displayName = otherUser?.username || otherUser?.phone || "Unknown User";
 
   return (
     <div className="bg-gray-800 w-full flex flex-col h-screen">
@@ -45,16 +107,18 @@ export default function OpenedChat() {
         <div className="relative shrink-0">
           <img
             className="w-12 h-12 rounded-full object-cover border-2 border-gray-600"
-            src="./defaultPfp.png"
-            alt="User avatar"
+            src={avatarUrl}
+            alt={`${displayName} avatar`}
           />
         </div>
 
         <div className="flex flex-col flex-1 min-w-0 ml-3">
           <h3 className="text-base font-semibold text-white truncate">
-            USERNAME
+            {displayName}
           </h3>
-          <span className="text-xs text-gray-400">last seen at 2:30 PM</span>
+          <span className="text-xs text-gray-400">
+            {otherUser?.isOnline ? "Online" : "Offline"}
+          </span>
         </div>
         <button className="p-2 hover:bg-gray-700 rounded-full transition-colors">
           <MoreVertIcon className="text-gray-300" />
@@ -87,6 +151,7 @@ export default function OpenedChat() {
               </div>
             </div>
           ))}
+          <div ref={bottomRef} />
         </div>
       </div>
 

@@ -12,19 +12,17 @@ function App() {
     <div className="h-screen overflow-hidden">
       <AuthProvider>
         <BrowserRouter>
-          <div className="flex h-full w-full">
-            <Routes>
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/" element={<ProtectedRoutes><MainLayout /></ProtectedRoutes>}>
-                <Route index element={null} />
-                <Route path="profile" element={null} />
-                <Route path="setting" element={null} />
-                <Route path="calls" element={null} />
-              </Route>
-              <Route path="*" element={<PageNotFound />} />
-            </Routes>
-          </div>
+          <Routes>
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<ProtectedRoutes><MainLayout /></ProtectedRoutes>}>
+              <Route index element={null} />
+              <Route path="profile" element={null} />
+              <Route path="setting" element={null} />
+              <Route path="calls" element={null} />
+            </Route>
+            <Route path="*" element={<PageNotFound />} />
+          </Routes>
         </BrowserRouter>
         <ToastContainer />
       </AuthProvider>

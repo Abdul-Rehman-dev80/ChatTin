@@ -8,7 +8,7 @@ const ConversationMember = sequelize.define(
       type: DataTypes.BIGINT,
       primaryKey: true,
       references: {
-        model: "conversations",
+        model: "conversation",
         key: "id",
       },
       onDelete: "CASCADE",
