@@ -1,5 +1,22 @@
 import jwt from "jsonwebtoken";
 
+const requireAuth = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+  if (!process.env.JWT_SECRET) {
+    return res.status(500).json({ message: "Server configuration error" });
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.userId = decoded.userId;
+    next();
+  } catch {
+    return res.status(401).json({ message: "Invalid or expired token" });
+  }
+};
 
 const socketAuth = (socket, next) => {
   const token = socket.handshake.auth.token;
@@ -24,3 +41,4 @@ const socketAuth = (socket, next) => {
 };
 
 export default socketAuth;
+export { requireAuth };

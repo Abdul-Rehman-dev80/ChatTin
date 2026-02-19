@@ -38,6 +38,10 @@ const User = sequelize.define(
         isEmail: true,
       },
     },
+    about: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     isOnline: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,

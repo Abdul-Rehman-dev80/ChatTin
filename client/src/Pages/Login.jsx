@@ -38,7 +38,7 @@ export default function Login() {
       }
 
       localStorage.setItem("chat_token", data.token);
-      setCurrentUser({ phone: formData.phone, authenticated: true });
+      setCurrentUser({ ...data.user, authenticated: true });
       toast.success("Logged in successfully!", {
         autoClose: 2000,
         draggable: true,

@@ -34,6 +34,7 @@ const PORT = process.env.PORT || 4242;
 
 app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:5173" }));
 app.use(express.json());
+app.use("/uploads", express.static("uploads"));
 
 app.use("/api", router);
 

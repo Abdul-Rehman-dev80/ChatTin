@@ -1,22 +1,29 @@
 import { useState, useEffect } from "react";
 import { useContext } from "react";
 import { createContext } from "react";
+import { getMe } from "../Services/authService.js";
 
 const AuthContext = createContext();
 
 export default function AuthProvider({ children }) {
-  // Initialize from localStorage if token exists
   const [currentUser, setCurrentUser] = useState(() => {
     const token = localStorage.getItem("chat_token");
     if (token) {
-      // If token exists, restore user state from localStorage
       const storedUser = localStorage.getItem("chat_user");
       return storedUser ? JSON.parse(storedUser) : { authenticated: true };
     }
     return null;
   });
 
-  // Update localStorage when currentUser changes
+  useEffect(() => {
+    if (!currentUser?.authenticated || currentUser.id) return;
+    const token = localStorage.getItem("chat_token");
+    if (!token) return;
+    getMe()
+      .then((user) => setCurrentUser({ ...user, authenticated: true }))
+      .catch(() => setCurrentUser(null));
+  }, [currentUser?.authenticated, currentUser?.id]);
+
   useEffect(() => {
     if (currentUser) {
       localStorage.setItem("chat_user", JSON.stringify(currentUser));
