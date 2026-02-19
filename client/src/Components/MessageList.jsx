@@ -33,7 +33,7 @@ export default function MessageList() {
   const allUsers = data?.pages.flatMap((page) => page.users) || [];
 
   return (
-    <div className="bg-gray-700 w-[50%] min-w-[270px] flex flex-col border-r border-gray-600">
+    <div className="bg-gray-700 w-full h-full flex flex-col">
       <div className="px-2 py-2">
         <h1 className="text-2xl font-bold text-white mb-2 text-center">
           ChatTin

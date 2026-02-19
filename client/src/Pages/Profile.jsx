@@ -59,11 +59,10 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-full bg-[#1a1a1a] flex items-center justify-center p-6">
-      <div className="w-full max-w-sm">
-        <div className="flex flex-col items-center gap-6 rounded-2xl bg-gray-800/80 border border-gray-700/50 p-8 shadow-xl">
-          <div className="flex flex-col items-center gap-2">
-            <img
+    <div className="flex-1 flex flex-col items-center justify-center p-8 bg-gray-900">
+      <div className="w-full max-w-sm flex flex-col items-center gap-6">
+        <div className="flex flex-col items-center gap-2">
+          <img
               className="w-24 h-24 rounded-full object-cover ring-2 ring-gray-600"
               src={avatar}
               alt="Profile"
@@ -81,9 +80,9 @@ export default function Profile() {
                 />
               </label>
             )}
-            {isUploading && <span className="text-xs text-gray-400">Uploading...</span>}
-          </div>
-          <div className="w-full space-y-4">
+          {isUploading && <span className="text-xs text-gray-400">Uploading...</span>}
+        </div>
+        <div className="w-full space-y-4">
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-400 mb-1.5">
                 Username
@@ -138,9 +137,9 @@ export default function Profile() {
                 readOnly={!isEditing}
                 disabled={!isEditing}
               />
-            </div>
           </div>
-          {isEditing ? (
+        </div>
+        {isEditing ? (
             <div className="flex gap-3 w-full">
               <button
                 onClick={handleSave}
@@ -165,7 +164,6 @@ export default function Profile() {
               Edit
             </button>
           )}
-        </div>
       </div>
     </div>
   );
