@@ -4,7 +4,7 @@ import { requireAuth } from "../Middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", requireAuth, createConversation);
-router.get("/", requireAuth, listConversations);
+router.post("/conversations", requireAuth, createConversation);
+router.get("/conversations", requireAuth, listConversations);
 
 export default router;

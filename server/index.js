@@ -12,6 +12,7 @@ import { Server } from "socket.io";
 import router from "./src/Routes/UserRoute.js";
 import socketAuth from "./src/Middleware/authMiddleware.js";
 import conversationRouter from "./src/Routes/ConversationRoute.js";
+import messageRouter from "./src/Routes/messageRoute.js";
 
 dotenv.config();
 
@@ -38,7 +39,8 @@ app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
 app.use("/api", router);
-app.use("/api/conversations", conversationRouter);
+app.use("/api/", conversationRouter);
+app.use("/api/", messageRouter);
 
 io.use(socketAuth);
 

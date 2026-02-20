@@ -4,6 +4,8 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SendIcon from "@mui/icons-material/Send";
 import { useAuth } from "../Contexts/AuthContext";
 import { SERVER_URL } from "../Services/axiosInstance";
+import { useQuery } from "@tanstack/react-query";
+import { getMessages } from "../Services/messageService";
 
 export default function OpenedChat({ selectedConversation }) {
   const { currentUser } = useAuth();
@@ -87,6 +89,10 @@ export default function OpenedChat({ selectedConversation }) {
       </div>
     );
   }
+  const { data, isPending, isError } = useQuery({
+    queryKey: ["messages", selectedConversation.id],
+    queryFn: () => getMessages(selectedConversation.id),
+  });
 
   // Get the other user in the conversation (not the current user)
   const otherUser = selectedConversation.users?.find(
@@ -130,7 +136,7 @@ export default function OpenedChat({ selectedConversation }) {
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto bg-gray-900 p-4">
         <div className="flex flex-col gap-3">
-          {messages.map((msg, index) => (
+          {data?.map((msg, index) => (
             <div
               key={index}
               className={`flex ${msg.sender === "Me" ? "justify-end" : "justify-start"}`}

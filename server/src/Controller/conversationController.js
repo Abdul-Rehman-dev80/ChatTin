@@ -1,7 +1,7 @@
 import Conversation from "../Model/Conversation.js";
 import ConversationMember from "../Model/ConversationMember.js";
 import User from "../Model/User.js";
-import { Sequelize } from "sequelize";
+import { Op } from "sequelize";
 
 export const createConversation = async (req, res) => {
   try {
@@ -22,7 +22,7 @@ export const createConversation = async (req, res) => {
           through: { attributes: [] },
           where: {
             id: {
-              [Sequelize.Op.in]: [currentUserId, otherUserId],
+              [Op.in]: [currentUserId, otherUserId],
             },
           },
         },

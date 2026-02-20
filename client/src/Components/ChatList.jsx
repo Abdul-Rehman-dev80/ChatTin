@@ -51,9 +51,7 @@ export default function ChatList({
   const items =
     search.trim().length === 0
       ? conversations
-      : (usersData?.users || []).filter(
-          (u) => u.id !== currentUser.id
-        );
+      : (usersData?.users || []).filter((u) => u.id !== currentUser.id);
 
   if (isPending) return <Loader />;
 
@@ -75,14 +73,11 @@ export default function ChatList({
           items.map((item) => {
             const isConversation = search.trim().length === 0;
             const user = isConversation
-              ? item.users.find(
-                  (u) => u.id !== currentUser.id
-                )
+              ? item.users.find((u) => u.id !== currentUser.id)
               : item;
 
             const isSelected =
-              isConversation &&
-              item.id === selectedConversationId;
+              isConversation && item.id === selectedConversationId;
 
             return (
               <div
