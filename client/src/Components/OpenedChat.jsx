@@ -81,14 +81,16 @@ export default function OpenedChat({ selectedConversation }) {
   if (!selectedConversation) {
     return (
       <div className="bg-gray-800 w-full flex flex-col h-screen items-center justify-center">
-        <p className="text-gray-400 text-lg">Select a conversation to start chatting</p>
+        <p className="text-gray-400 text-lg">
+          Select a conversation to start chatting
+        </p>
       </div>
     );
   }
 
   // Get the other user in the conversation (not the current user)
   const otherUser = selectedConversation.users?.find(
-    (user) => user.id !== currentUser?.id
+    (user) => user.id !== currentUser?.id,
   );
 
   // Get avatar URL
