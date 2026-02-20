@@ -1,55 +1,42 @@
 import Conversation from "../Model/Conversation.js";
 import ConversationMember from "../Model/ConversationMember.js";
 import User from "../Model/User.js";
+import { Op } from "sequelize";
 
 export const createConversation = async (req, res) => {
   try {
     const { otherUserId } = req.body;
     const currentUserId = req.userId;
 
-    if (!otherUserId) {
-      return res.status(400).json({ message: "otherUserId is required" });
+    if (!otherUserId || Number(otherUserId) === currentUserId) {
+      return res.status(400).json({ message: "Invalid user ID" });
     }
 
-    if (Number(otherUserId) === currentUserId) {
-      return res.status(400).json({ message: "Cannot create chat with yourself" });
-    }
-
-    const otherUser = await User.findByPk(otherUserId);
-    if (!otherUser) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    // Check if direct conversation already exists
-    const existingMembers = await ConversationMember.findAll({
-      where: { userId: currentUserId },
-      include: [{ model: Conversation, where: { type: "direct" } }],
+    // 1. Efficient check for existing direct chat
+    const existing = await Conversation.findOne({
+      where: { type: "direct" },
+      include: [{
+        model: ConversationMember,
+        as: "members", // Ensure this alias matches your associations
+        where: { userId: [currentUserId, otherUserId] }
+      }],
+      group: ['conversation.id'],
+      having: Sequelize.literal('count(DISTINCT "members"."user_id") = 2')
     });
 
-    for (const m of existingMembers) {
-      const members = await ConversationMember.findAll({
-        where: { conversationId: m.conversationId },
-      });
-      if (members.some((mb) => mb.userId === Number(otherUserId))) {
-        const conv = await Conversation.findByPk(m.conversationId, {
-          include: [{ model: User, as: "users", through: { attributes: [] }, attributes: ["id", "username", "pfp", "phone"] }],
-        });
-        return res.status(200).json(conv);
-      }
-    }
+    if (existing) return res.status(200).json(existing);
 
-    const conversation = await Conversation.create({
-      type: "direct",
-      createdBy: currentUserId,
-    });
-
+    // 2. Create and Link
+    const conversation = await Conversation.create({ type: "direct", createdBy: currentUserId });
+    
     await ConversationMember.bulkCreate([
       { conversationId: conversation.id, userId: currentUserId },
       { conversationId: conversation.id, userId: otherUserId },
     ]);
 
+    // 3. Return the new chat with user details
     const result = await Conversation.findByPk(conversation.id, {
-      include: [{ model: User, as: "users", through: { attributes: [] }, attributes: ["id", "username", "pfp", "phone"] }],
+      include: [{ model: User, as: "users", through: { attributes: [] }, attributes: ["id", "username", "pfp"] }],
     });
 
     return res.status(201).json(result);
@@ -60,36 +47,26 @@ export const createConversation = async (req, res) => {
 
 export const listConversations = async (req, res) => {
   try {
-    const userId = req.userId;
-
-    // Get all conversations where the user is a member
-    const memberRows = await ConversationMember.findAll({
-      where: { userId },
+    const conversations = await Conversation.findAll({
       include: [
-        {
-          model: Conversation,
-          as: "conversation",
-          include: [
-            {
-              model: User,
-              as: "users",
-              through: { attributes: [] },
-              attributes: ["id", "username", "pfp", "phone"],
-            },
-          ],
+        { 
+          model: ConversationMember, 
+          as: "members", 
+          where: { userId: req.userId }, 
+          attributes: [] 
         },
+        { 
+          model: User, 
+          as: "users", 
+          through: { attributes: [] }, 
+          attributes: ["id", "username", "pfp"] 
+        }
       ],
+      order: [['updatedAt', 'DESC']]
     });
-
-    // Extract conversations and sort by most recent
-    const conversations = memberRows
-      .map((m) => m.conversation)
-      .filter(Boolean)
-      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
     return res.status(200).json(conversations);
   } catch (error) {
-    console.error("Error listing conversations:", error);
     return res.status(500).json({ message: "Server error", error: error.message });
   }
 };

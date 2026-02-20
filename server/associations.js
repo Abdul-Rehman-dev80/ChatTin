@@ -3,36 +3,39 @@ import ConversationMember from "./src/Model/ConversationMember.js";
 import Message from "./src/Model/Message.js";
 import User from "./src/Model/User.js";
 
-// A User can be in many Conversations
+// --- Many-to-Many: User <-> Conversation ---
 User.belongsToMany(Conversation, {
   through: ConversationMember,
   foreignKey: "userId",
   as: "conversations",
 });
 
-// A Conversation can have many Users
 Conversation.belongsToMany(User, {
   through: ConversationMember,
   foreignKey: "conversationId",
   as: "users",
 });
 
-// ConversationMember belongs to Conversation (for includes)
+// --- Junction Table Links (Crucial for includes) ---
+// This allows: Conversation.findAll({ include: "members" })
+Conversation.hasMany(ConversationMember, { 
+  foreignKey: "conversationId", 
+  as: "members" 
+});
+
 ConversationMember.belongsTo(Conversation, {
   foreignKey: "conversationId",
   as: "conversation",
 });
 
-// ConversationMember belongs to User (for includes)
 ConversationMember.belongsTo(User, {
   foreignKey: "userId",
   as: "user",
 });
 
-// A conversation has many messages
-Conversation.hasMany(Message, { foreignKey: "conversationId" });
+// --- Messages ---
+Conversation.hasMany(Message, { foreignKey: "conversationId", as: "messages" });
 Message.belongsTo(Conversation, { foreignKey: "conversationId" });
 
-// A user sends many messages
-User.hasMany(Message, { foreignKey: "senderId" });
+User.hasMany(Message, { foreignKey: "senderId", as: "sentMessages" });
 Message.belongsTo(User, { foreignKey: "senderId", as: "sender" });

@@ -71,7 +71,7 @@ export default function Login() {
     <div className="fixed inset-0 flex justify-center items-center bg-gray-900 px-4 py-8">
       <form
         onSubmit={handleLogin}
-        className="bg-gray-800 flex flex-col p-8 rounded-xl w-full max-w-[400px] shadow-2xl border border-gray-700"
+        className="bg-gray-800 flex flex-col p-8 rounded-xl w-full max-w-100 shadow-2xl border border-gray-700"
       >
         <h1 className="text-3xl font-bold mb-6 text-center text-white">
           ChatTin
