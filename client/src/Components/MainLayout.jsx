@@ -7,15 +7,15 @@ import ChatList from "./ChatList";
 import Profile from "../Pages/Profile";
 import Setting from "../Pages/Setting";
 import Calls from "../Pages/Calls";
+import Loader from "./Loader";
 
 export default function MainLayout() {
   const location = useLocation();
   const path = location.pathname;
-  
-  // State to store the currently selected conversation
-  const [selectedConversation, setSelectedConversation] = useState(null);
 
-  // Function to handle when a conversation is clicked
+  const [selectedConversation, setSelectedConversation] = useState(null);
+  const [isCreatingConversation, setIsCreatingConversation] = useState(false);
+
   const handleSelectConversation = (conversation) => {
     setSelectedConversation(conversation);
   };
@@ -26,6 +26,7 @@ export default function MainLayout() {
         <ChatList
           onSelectConversation={handleSelectConversation}
           selectedConversationId={selectedConversation?.id}
+          onCreatingConversation={setIsCreatingConversation}
         />
       );
     if (path === "/profile") return <Profile />;
@@ -35,9 +36,17 @@ export default function MainLayout() {
   };
 
   const renderRight = () => {
-    if (path === "/")
-      return <OpenedChat selectedConversation={selectedConversation} />;
-    return <EmptyChatPlaceholder />;
+    if (path !== "/") return <EmptyChatPlaceholder />;
+    // When user clicks someone from search, we show loading until the new chat opens
+    if (isCreatingConversation) {
+      return (
+        <div className="bg-gray-800 w-full flex flex-col h-screen items-center justify-center">
+          <Loader />
+          <p className="text-gray-400 mt-3">Starting conversation...</p>
+        </div>
+      );
+    }
+    return <OpenedChat selectedConversation={selectedConversation} />;
   };
 
   return (

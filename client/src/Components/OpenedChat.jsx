@@ -13,17 +13,17 @@ export default function OpenedChat({ selectedConversation }) {
 
   const bottomRef = useRef(null);
 
-  // Call useQuery unconditionally (Rules of Hooks). Only run when a conversation is selected.
+  // Normalize id so cache key is consistent (number vs string from API)
+  const conversationId = selectedConversation?.id != null ? String(selectedConversation.id) : null;
+
   const { data, isPending, isError } = useQuery({
-    queryKey: ["messages", selectedConversation?.id],
+    queryKey: ["messages", conversationId],
     queryFn: () => getMessages(selectedConversation.id),
-    enabled: !!selectedConversation?.id,
+    enabled: !!conversationId,
   });
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView();
-    console.log("Messages loaded:", data);
-    console.log("Selected conversation in OpenedChat:", selectedConversation);
   }, [selectedConversation, data]);
 
   function handleSend(msg) {
@@ -47,7 +47,6 @@ export default function OpenedChat({ selectedConversation }) {
   const otherUser = selectedConversation.users?.find(
     (user) => user.id !== currentUser?.id,
   );
-  console.log("Selected user Id:", otherUser?.id);
 
   // Get avatar URL
   const avatarUrl =
@@ -88,6 +87,11 @@ export default function OpenedChat({ selectedConversation }) {
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto bg-gray-900 p-4">
         <div className="flex flex-col gap-3">
+          {!isPending && (!data || data.length === 0) && (
+            <p className="text-gray-500 text-center py-8">
+              No messages yet. Say hi!
+            </p>
+          )}
           {data?.map((msg, index) => (
             <div
               key={index}

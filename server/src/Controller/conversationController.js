@@ -1,7 +1,6 @@
 import Conversation from "../Model/Conversation.js";
 import ConversationMember from "../Model/ConversationMember.js";
 import User from "../Model/User.js";
-import { Op } from "sequelize";
 
 export const createConversation = async (req, res) => {
   try {
@@ -12,24 +11,31 @@ export const createConversation = async (req, res) => {
       return res.status(400).json({ message: "Invalid user ID" });
     }
 
-    // 1. Efficient check for existing direct chat
-    const existing = await Conversation.findOne({
-      where: { type: "direct" },
-      include: [
-        {
-          model: User,
-          as: "users",
-          through: { attributes: [] },
-          where: {
-            id: {
-              [Op.in]: [currentUserId, otherUserId],
-            },
-          },
-        },
-      ],
+    // 1. Find existing direct chat that has BOTH current user and the other user
+    const currentUserConvs = await ConversationMember.findAll({
+      where: { userId: currentUserId },
+      attributes: ["conversationId"],
     });
+    const otherUserConvs = await ConversationMember.findAll({
+      where: { userId: otherUserId },
+      attributes: ["conversationId"],
+    });
+    const currentIds = new Set(currentUserConvs.map((c) => c.conversationId.toString()));
+    const sharedId = otherUserConvs.find((c) => currentIds.has(c.conversationId.toString()));
 
-    if (existing) return res.status(200).json(existing);
+    if (sharedId) {
+      const existing = await Conversation.findByPk(sharedId.conversationId, {
+        include: [
+          {
+            model: User,
+            as: "users",
+            through: { attributes: [] },
+            attributes: ["id", "username", "phone", "pfp"],
+          },
+        ],
+      });
+      if (existing) return res.status(200).json(existing);
+    }
 
     // 2. Create and Link
     const conversation = await Conversation.create({
@@ -49,7 +55,7 @@ export const createConversation = async (req, res) => {
           model: User,
           as: "users",
           through: { attributes: [] },
-          attributes: ["id", "username", "pfp"],
+          attributes: ["id", "username", "phone", "pfp"],
         },
       ],
     });
@@ -76,7 +82,7 @@ export const listConversations = async (req, res) => {
           model: User,
           as: "users",
           through: { attributes: [] },
-          attributes: ["id", "username", "pfp"],
+          attributes: ["id", "username", "phone", "pfp"],
         },
       ],
       order: [["updatedAt", "DESC"]],

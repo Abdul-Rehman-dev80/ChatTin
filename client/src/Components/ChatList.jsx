@@ -13,12 +13,13 @@ import { useAuth } from "../Contexts/AuthContext";
 export default function ChatList({
   onSelectConversation,
   selectedConversationId,
+  onCreatingConversation,
 }) {
   const [search, setSearch] = useState("");
   const { currentUser } = useAuth();
   const queryClient = useQueryClient();
 
-  // Fetch conversations
+  // Fetch conversations (shown when search is empty)
   const {
     data: conversations = [],
     isPending,
@@ -29,28 +30,38 @@ export default function ChatList({
     retry: false,
   });
 
-  // Search users
+  // Search users (when user types in search box)
   const { data: usersData } = useQuery({
     queryKey: ["users", search],
     queryFn: () => getUsers({ search }),
     enabled: search.trim().length > 0,
   });
 
-  // Create (or get existing) conversation
+  // Create a new conversation when user clicks someone from search.
+  // If they already have a chat, the API returns that one. Then we open it in OpenedChat.
   const createConversationMutation = useMutation({
     mutationFn: createConversation,
+    onMutate: () => {
+      onCreatingConversation?.(true);
+    },
     onSuccess: (conversation) => {
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
       onSelectConversation?.(conversation);
     },
+    onSettled: () => {
+      onCreatingConversation?.(false);
+    },
   });
 
-  const handleClick = (user) => {
+  // User clicked someone from search → create (or get) conversation and open it
+  const handleClickUser = (user) => {
     if (user.id === currentUser.id) return;
+    createConversationMutation.mutate({ otherUserId: user.id });
+  };
 
-    createConversationMutation.mutate({
-      otherUserId: user.id,
-    });
+  // User clicked an existing chat in the list → just open it
+  const handleSelectExistingConversation = (conversation) => {
+    onSelectConversation?.(conversation);
   };
 
   const items =
@@ -87,7 +98,11 @@ export default function ChatList({
             return (
               <div
                 key={isConversation ? item.id : user.id}
-                onClick={() => handleClick(user)}
+                onClick={() =>
+                  isConversation
+                    ? handleSelectExistingConversation(item)
+                    : handleClickUser(user)
+                }
                 className={isSelected ? "bg-gray-800" : ""}
               >
                 <ChatCard
