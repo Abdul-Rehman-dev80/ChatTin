@@ -59,7 +59,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-8 bg-gray-900">
+    <div className="flex-1 flex flex-col items-center p-8 bg-gray-900">
       <div className="w-full max-w-sm flex flex-col items-center gap-6">
         <div className="flex flex-col items-center gap-2">
           <img

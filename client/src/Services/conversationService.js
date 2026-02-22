@@ -2,12 +2,12 @@ import api from "./axiosInstance";
 
 /**
  * Create a new conversation (1-on-1 chat) with another user
- * @param {number} otherUserId - The ID of the user to start a chat with
+ * @param {{ otherUserId: number }} params - Object with otherUserId (the ID of the user to start a chat with)
  * @returns {Promise} The conversation object with users array
  */
-export const createConversation = async (otherUserId) => {
+export const createConversation = async ({ otherUserId }) => {
   const res = await api.post("/conversations", {
-    otherUserId: otherUserId,
+    otherUserId,
   });
   return res.data; // Returns the conversation object
 };
@@ -19,7 +19,7 @@ export const createConversation = async (otherUserId) => {
  */
 export const getConversations = async () => {
   try {
-    const res = await api.get("/conversations");
+    const res = await api.get("/getConversations");
     // Ensure we always return an array
     return Array.isArray(res.data) ? res.data : [];
   } catch (error) {

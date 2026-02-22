@@ -19,9 +19,14 @@ export default function ChatList({
   const queryClient = useQueryClient();
 
   // Fetch conversations
-  const { data: conversations = [], isPending } = useQuery({
+  const {
+    data: conversations = [],
+    isPending,
+    isError,
+  } = useQuery({
     queryKey: ["conversations"],
     queryFn: getConversations,
+    retry: false,
   });
 
   // Search users
@@ -104,6 +109,7 @@ export default function ChatList({
             );
           })
         )}
+        {isError && <p className="text-red-500 text-center">Error loading conversations</p>}
       </div>
     </div>
   );
