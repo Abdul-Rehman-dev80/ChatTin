@@ -3,8 +3,9 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SendIcon from "@mui/icons-material/Send";
 import { useAuth } from "../Contexts/AuthContext";
 import { SERVER_URL } from "../Services/axiosInstance";
-import { useQuery } from "@tanstack/react-query";
-import { getMessages } from "../Services/messageService";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getMessages, sendMessage } from "../Services/messageService";
+import { socket } from "../Services/socketService";
 import Loader from "./Loader";
 
 export default function OpenedChat({ selectedConversation }) {
@@ -16,20 +17,48 @@ export default function OpenedChat({ selectedConversation }) {
   // Normalize id so cache key is consistent (number vs string from API)
   const conversationId = selectedConversation?.id != null ? String(selectedConversation.id) : null;
 
+  const queryClient = useQueryClient();
   const { data, isPending, isError } = useQuery({
     queryKey: ["messages", conversationId],
     queryFn: () => getMessages(selectedConversation.id),
     enabled: !!conversationId,
   });
 
+  const sendMessageMutation = useMutation({
+    mutationFn: ({ conversationId, body }) => sendMessage(conversationId, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["messages", conversationId] });
+    },
+  });
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView();
   }, [selectedConversation, data]);
 
+  // Join conversation room for real-time messages; leave when switching or unmounting
+  useEffect(() => {
+    if (!conversationId) return;
+    socket.emit("join_conversation", conversationId);
+    return () => {
+      socket.emit("leave_conversation", conversationId);
+    };
+  }, [conversationId]);
+
+  // Listen for new messages in this conversation and refresh the list
+  useEffect(() => {
+    const onNewMessage = (message) => {
+      if (String(message.conversationId) === conversationId) {
+        queryClient.invalidateQueries({ queryKey: ["messages", conversationId] });
+      }
+    };
+    socket.on("new_message", onNewMessage);
+    return () => socket.off("new_message", onNewMessage);
+  }, [conversationId, queryClient]);
+
   function handleSend(msg) {
-    if (!msg.trim()) return;
-    console.log("Sending message:", msg);
-    // TODO: Implement actual message sending via socket/API
+    if (!msg.trim() || !conversationId) return;
+    sendMessageMutation.mutate({ conversationId: selectedConversation.id, body: msg });
+    setNewMessage("");
   }
 
   // If no conversation is selected, show empty state
@@ -131,20 +160,14 @@ export default function OpenedChat({ selectedConversation }) {
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyPress={(e) => {
-            if (e.key === "Enter") {
-              handleSend(newMessage);
-              setNewMessage("");
-            }
+            if (e.key === "Enter") handleSend(newMessage);
           }}
           type="text"
           className="flex-1 bg-gray-700 text-white px-4 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
           placeholder="Type a message..."
         />
         <button
-          onClick={() => {
-            handleSend(newMessage);
-            setNewMessage("");
-          }}
+          onClick={() => handleSend(newMessage)}
           className="ml-3 p-3 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors text-white"
         >
           <SendIcon />

@@ -4,9 +4,11 @@ import { io } from "socket.io-client";
  * Creates a socket connection with the current token from localStorage
  * @returns {import("socket.io-client").Socket} Socket instance
  */
+const getSocketUrl = () => import.meta.env.VITE_SERVER_URL || "http://localhost:3000";
+
 const createSocket = () => {
   const token = localStorage.getItem("chat_token");
-  return io("http://localhost:3000", {
+  return io(getSocketUrl(), {
     autoConnect: false,
     auth: {
       token: token || null,

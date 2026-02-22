@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useContext } from "react";
 import { createContext } from "react";
 import { getMe } from "../Services/authService.js";
+import { socket } from "../Services/socketService.js";
 
 const AuthContext = createContext();
 
@@ -32,6 +33,13 @@ export default function AuthProvider({ children }) {
       localStorage.removeItem("chat_token");
     }
   }, [currentUser]);
+
+  // Connect socket for real-time updates when user is logged in (e.g. after refresh)
+  useEffect(() => {
+    if (currentUser?.id && !socket.connected) {
+      socket.connect();
+    }
+  }, [currentUser?.id]);
 
   return (
     <AuthContext.Provider

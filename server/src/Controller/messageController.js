@@ -34,4 +34,40 @@ const getMessages = async (req, res) => {
   }
 };
 
-export { getMessages };
+// Send a new message. User must be in the conversation.
+const sendMessage = async (req, res) => {
+  try {
+    const { conversationId, body } = req.body;
+    const senderId = req.userId;
+
+    if (!conversationId || !body?.trim()) {
+      return res.status(400).json({ message: "conversationId and body are required" });
+    }
+
+    const membership = await ConversationMember.findOne({
+      where: { conversationId, userId: senderId },
+    });
+    if (!membership) {
+      return res.status(403).json({ message: "Not a member of this conversation" });
+    }
+
+    const message = await Message.create({
+      conversationId,
+      senderId,
+      body: body.trim(),
+    });
+
+    const io = req.app.get("io");
+    if (io) {
+      io.to(`conversation:${conversationId}`).emit("new_message", message);
+    }
+
+    return res.status(201).json(message);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
+  }
+};
+
+export { getMessages, sendMessage };

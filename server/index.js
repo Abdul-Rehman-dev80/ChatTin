@@ -32,6 +32,8 @@ const io = new Server(httpServer, {
   },
 });
 
+app.set("io", io);
+
 const PORT = process.env.PORT || 4242;
 
 app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:5173" }));
@@ -45,11 +47,13 @@ app.use("/api/", messageRouter);
 io.use(socketAuth);
 
 io.on("connection", (socket) => {
-  console.log("A user connected:", socket.id);
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected");
+  socket.on("join_conversation", (conversationId) => {
+    if (conversationId) socket.join(`conversation:${conversationId}`);
   });
+  socket.on("leave_conversation", (conversationId) => {
+    if (conversationId) socket.leave(`conversation:${conversationId}`);
+  });
+  socket.on("disconnect", () => {});
 });
 
 (async function startServer() {
