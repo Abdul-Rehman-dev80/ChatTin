@@ -10,6 +10,22 @@ import { getConversations } from "../Services/conversationService";
 import { socket } from "../Services/socketService";
 import Loader from "./Loader";
 
+/** Turns lastSeen date into a short "2h ago" / "yesterday" style string */
+function formatLastSeen(dateStr) {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+  if (diffMins < 1) return "just now";
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays === 1) return "yesterday";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
+
 export default function OpenedChat() {
   const { currentUser } = useAuth();
   const { selectedConversationId } = useChat();
@@ -21,6 +37,7 @@ export default function OpenedChat() {
     queryKey: ["conversations"],
     queryFn: getConversations,
     retry: false,
+    refetchInterval: selectedConversationId ? 30_000 : false, // refresh online/lastSeen every 30s
   });
   const selectedConversation = selectedConversationId != null
     ? conversations.find((c) => c.id === selectedConversationId || c.id === Number(selectedConversationId))
@@ -98,8 +115,14 @@ export default function OpenedChat() {
       ? `${SERVER_URL}/${otherUser.pfp}`
       : "/defaultPfp.png";
 
-  // Get username or fallback to phone number
   const displayName = otherUser?.username || otherUser?.phone || "Unknown User";
+
+  // Status line: Online or Last seen ...
+  const statusText = otherUser?.isOnline
+    ? "Online"
+    : otherUser?.lastSeen
+      ? `Last seen ${formatLastSeen(otherUser.lastSeen)}`
+      : "Offline";
 
   if (isPending) return <Loader />;
 
@@ -119,9 +142,7 @@ export default function OpenedChat() {
           <h3 className="text-base font-semibold text-white truncate">
             {displayName}
           </h3>
-          <span className="text-xs text-gray-400">
-            {otherUser?.isOnline ? "Online" : "Offline"}
-          </span>
+          <span className="text-xs text-gray-400">{statusText}</span>
         </div>
         <button className="p-2 hover:bg-gray-700 rounded-full transition-colors">
           <MoreVertIcon className="text-gray-300" />

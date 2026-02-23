@@ -13,6 +13,7 @@ import router from "./src/Routes/UserRoute.js";
 import socketAuth from "./src/Middleware/authMiddleware.js";
 import conversationRouter from "./src/Routes/ConversationRoute.js";
 import messageRouter from "./src/Routes/messageRoute.js";
+import User from "./src/Model/User.js";
 
 dotenv.config();
 
@@ -46,14 +47,33 @@ app.use("/api/", messageRouter);
 
 io.use(socketAuth);
 
-io.on("connection", (socket) => {
+io.on("connection", async (socket) => {
+  const userId = socket.user?.userId;
+  if (userId) {
+    try {
+      await User.update({ isOnline: true }, { where: { id: userId } });
+    } catch (err) {
+      console.error("Status update error:", err);
+    }
+  }
   socket.on("join_conversation", (conversationId) => {
     if (conversationId) socket.join(`conversation:${conversationId}`);
   });
   socket.on("leave_conversation", (conversationId) => {
     if (conversationId) socket.leave(`conversation:${conversationId}`);
   });
-  socket.on("disconnect", () => {});
+  socket.on("disconnect", async () => {
+    if (userId) {
+      try {
+        await User.update(
+          { isOnline: false, lastSeen: new Date() },
+          { where: { id: userId } },
+        );
+      } catch (err) {
+        console.error("Disconnect status update error:", err);
+      }
+    }
+  });
 });
 
 (async function startServer() {

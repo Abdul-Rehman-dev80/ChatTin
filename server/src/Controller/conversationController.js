@@ -35,7 +35,7 @@ export const createConversation = async (req, res) => {
             model: User,
             as: "users",
             through: { attributes: [] },
-            attributes: ["id", "username", "phone", "pfp"],
+            attributes: ["id", "username", "phone", "pfp", "isOnline", "lastSeen"],
           },
         ],
       });
@@ -60,7 +60,7 @@ export const createConversation = async (req, res) => {
           model: User,
           as: "users",
           through: { attributes: [] },
-          attributes: ["id", "username", "phone", "pfp"],
+          attributes: ["id", "username", "phone", "pfp", "isOnline", "lastSeen"],
         },
       ],
     });
@@ -110,7 +110,7 @@ export const listConversations = async (req, res) => {
           model: User,
           as: "users",
           through: { attributes: [] },
-          attributes: ["id", "username", "phone", "pfp"],
+          attributes: ["id", "username", "phone", "pfp", "isOnline", "lastSeen"],
         },
       ],
       order: [["updatedAt", "DESC"]],
