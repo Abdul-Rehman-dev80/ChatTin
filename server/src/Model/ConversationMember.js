@@ -26,6 +26,10 @@ const ConversationMember = sequelize.define(
       type: DataTypes.STRING(20),
       defaultValue: "member", // 'admin' | 'member'
     },
+    lastReadAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
     freezeTableName: true,

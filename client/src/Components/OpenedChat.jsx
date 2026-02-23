@@ -24,6 +24,13 @@ export default function OpenedChat({ selectedConversation }) {
     enabled: !!conversationId,
   });
 
+  // When we load messages we've "read" the chat — refresh list so unread dot updates
+  useEffect(() => {
+    if (conversationId && data) {
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+    }
+  }, [conversationId, data, queryClient]);
+
   const sendMessageMutation = useMutation({
     mutationFn: ({ conversationId, body }) => sendMessage(conversationId, body),
     onSuccess: () => {

@@ -1,6 +1,7 @@
 import Conversation from "../Model/Conversation.js";
 import ConversationMember from "../Model/ConversationMember.js";
 import User from "../Model/User.js";
+import { sequelize } from "../Config/dbConfig.js";
 
 export const createConversation = async (req, res) => {
   try {
@@ -20,8 +21,12 @@ export const createConversation = async (req, res) => {
       where: { userId: otherUserId },
       attributes: ["conversationId"],
     });
-    const currentIds = new Set(currentUserConvs.map((c) => c.conversationId.toString()));
-    const sharedId = otherUserConvs.find((c) => currentIds.has(c.conversationId.toString()));
+    const currentIds = new Set(
+      currentUserConvs.map((c) => c.conversationId.toString()),
+    );
+    const sharedId = otherUserConvs.find((c) =>
+      currentIds.has(c.conversationId.toString()),
+    );
 
     if (sharedId) {
       const existing = await Conversation.findByPk(sharedId.conversationId, {
@@ -70,14 +75,37 @@ export const createConversation = async (req, res) => {
 
 export const listConversations = async (req, res) => {
   try {
+    const userId = Number(req.userId);
+
+    // One query: conversation ids + hasUnread (EXISTS, no message rows loaded)
+    // With QueryTypes.SELECT, sequelize returns the rows array directly (not [rows, metadata])
+    const rows = await sequelize.query(
+      `SELECT cm.conversation_id AS "conversationId",
+         EXISTS (
+           SELECT 1 FROM message m
+           WHERE m.conversation_id = cm.conversation_id
+             AND m.sender_id != :userId
+             AND m.created_at > COALESCE(cm.last_read_at, '1970-01-01'::timestamptz)
+         ) AS "hasUnread"
+       FROM conversation_member cm
+       WHERE cm.user_id = :userId`,
+      { replacements: { userId }, type: sequelize.QueryTypes.SELECT }
+    );
+
+    const list = Array.isArray(rows) ? rows : [];
+    const conversationIds = list.map((r) => r.conversationId);
+    const hasUnreadByConv = {};
+    list.forEach((r) => {
+      hasUnreadByConv[r.conversationId] = r.hasUnread === true;
+    });
+
+    if (conversationIds.length === 0) {
+      return res.status(200).json([]);
+    }
+
     const conversations = await Conversation.findAll({
+      where: { id: conversationIds },
       include: [
-        {
-          model: ConversationMember,
-          as: "members",
-          where: { userId: req.userId },
-          attributes: [],
-        },
         {
           model: User,
           as: "users",
@@ -88,7 +116,13 @@ export const listConversations = async (req, res) => {
       order: [["updatedAt", "DESC"]],
     });
 
-    return res.status(200).json(conversations);
+    const result = conversations.map((c) => {
+      const plain = c.get({ plain: true });
+      plain.hasUnread = !!hasUnreadByConv[c.id];
+      return plain;
+    });
+
+    return res.status(200).json(result);
   } catch (error) {
     return res
       .status(500)

@@ -118,6 +118,7 @@ export default function ChatList({
                           minute: "2-digit",
                         })
                       : "",
+                    hasUnread: isConversation ? item.hasUnread : false,
                   }}
                 />
               </div>

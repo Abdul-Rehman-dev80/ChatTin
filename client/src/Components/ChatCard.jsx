@@ -3,7 +3,7 @@ import { SERVER_URL } from "../Services/axiosInstance.js";
 export default function ChatCard({ details }) {
   if (!details) return null;
 
-  const { pfp, username, lastMessage, time } = details;
+  const { pfp, username, lastMessage, time, hasUnread } = details;
   const avatar = pfp && pfp !== "defaultPfp.png" ? `${SERVER_URL}/${pfp}` : "/defaultPfp.png";
 
   return (
@@ -14,6 +14,12 @@ export default function ChatCard({ details }) {
           src={avatar}
           alt={username ? `${username} avatar` : "User avatar"}
         />
+        {hasUnread && (
+          <span
+            className="absolute top-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-600"
+            aria-label="Unread messages"
+          />
+        )}
       </div>
 
       <div className="flex flex-col flex-1 min-w-0 ml-3">

@@ -14,6 +14,9 @@ const getMessages = async (req, res) => {
       return res.status(403).json({ message: "Not a member of this conversation" });
     }
 
+    // Mark as read when user opens the chat
+    await membership.update({ lastReadAt: new Date() });
+
     const messages = await Message.findAll({
       where: { conversationId },
       include: [
