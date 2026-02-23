@@ -26,9 +26,14 @@ if (!process.env.JWT_SECRET) {
 const app = express();
 const httpServer = createServer(app);
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
   },
 });
@@ -37,7 +42,7 @@ app.set("io", io);
 
 const PORT = process.env.PORT || 4242;
 
-app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:5173" }));
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
@@ -80,8 +85,9 @@ io.on("connection", async (socket) => {
   try {
     await dbConnectionCheck();
     await sequelize.sync({ alter: true });
-    httpServer.listen(PORT, () => {
+    httpServer.listen(PORT, "0.0.0.0", () => {
       console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`LAN: use http://YOUR_PC_IP:${PORT} from other devices (set CLIENT_URL & VITE_SERVER_URL to that IP)`);
     });
   } catch (error) {
     console.error("Startup error", error);
