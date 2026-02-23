@@ -9,15 +9,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Loader from "./Loader";
 import { useState } from "react";
 import { useAuth } from "../Contexts/AuthContext";
+import { useChat } from "../Contexts/ChatContext";
 
-export default function ChatList({
-  onSelectConversation,
-  selectedConversationId,
-  onCreatingConversation,
-}) {
+export default function ChatList() {
   const [search, setSearch] = useState("");
   const { currentUser } = useAuth();
   const queryClient = useQueryClient();
+  const { setSelectedConversationId, selectedConversationId, setIsCreatingConversation } = useChat();
 
   // Fetch conversations (shown when search is empty)
   const {
@@ -41,16 +39,12 @@ export default function ChatList({
   // If they already have a chat, the API returns that one. Then we open it in OpenedChat.
   const createConversationMutation = useMutation({
     mutationFn: createConversation,
-    onMutate: () => {
-      onCreatingConversation?.(true);
-    },
+    onMutate: () => setIsCreatingConversation(true),
     onSuccess: (conversation) => {
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
-      onSelectConversation?.(conversation);
+      setSelectedConversationId(conversation.id);
     },
-    onSettled: () => {
-      onCreatingConversation?.(false);
-    },
+    onSettled: () => setIsCreatingConversation(false),
   });
 
   // User clicked someone from search → create (or get) conversation and open it
@@ -59,9 +53,8 @@ export default function ChatList({
     createConversationMutation.mutate({ otherUserId: user.id });
   };
 
-  // User clicked an existing chat in the list → just open it
   const handleSelectExistingConversation = (conversation) => {
-    onSelectConversation?.(conversation);
+    setSelectedConversationId(conversation.id);
   };
 
   const items =

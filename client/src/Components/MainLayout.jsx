@@ -1,5 +1,4 @@
 import { useLocation } from "react-router";
-import { useState } from "react";
 import SideNav from "./SideNav";
 import OpenedChat from "./OpenedChat";
 import EmptyChatPlaceholder from "./EmptyChatPlaceholder";
@@ -8,27 +7,15 @@ import Profile from "../Pages/Profile";
 import Setting from "../Pages/Setting";
 import Calls from "../Pages/Calls";
 import Loader from "./Loader";
+import { useChat } from "../Contexts/ChatContext";
 
 export default function MainLayout() {
   const location = useLocation();
   const path = location.pathname;
-
-  const [selectedConversation, setSelectedConversation] = useState(null);
-  const [isCreatingConversation, setIsCreatingConversation] = useState(false);
-
-  const handleSelectConversation = (conversation) => {
-    setSelectedConversation(conversation);
-  };
+  const { isCreatingConversation } = useChat();
 
   const renderMiddle = () => {
-    if (path === "/")
-      return (
-        <ChatList
-          onSelectConversation={handleSelectConversation}
-          selectedConversationId={selectedConversation?.id}
-          onCreatingConversation={setIsCreatingConversation}
-        />
-      );
+    if (path === "/") return <ChatList />;
     if (path === "/profile") return <Profile />;
     if (path === "/setting") return <Setting />;
     if (path === "/calls") return <Calls />;
@@ -37,7 +24,6 @@ export default function MainLayout() {
 
   const renderRight = () => {
     if (path !== "/") return <EmptyChatPlaceholder />;
-    // When user clicks someone from search, we show loading until the new chat opens
     if (isCreatingConversation) {
       return (
         <div className="bg-gray-800 w-full flex flex-col h-screen items-center justify-center">
@@ -46,7 +32,7 @@ export default function MainLayout() {
         </div>
       );
     }
-    return <OpenedChat selectedConversation={selectedConversation} />;
+    return <OpenedChat />;
   };
 
   return (

@@ -2,25 +2,35 @@ import { useEffect, useRef, useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SendIcon from "@mui/icons-material/Send";
 import { useAuth } from "../Contexts/AuthContext";
+import { useChat } from "../Contexts/ChatContext";
 import { SERVER_URL } from "../Services/axiosInstance";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getMessages, sendMessage } from "../Services/messageService";
+import { getConversations } from "../Services/conversationService";
 import { socket } from "../Services/socketService";
 import Loader from "./Loader";
 
-export default function OpenedChat({ selectedConversation }) {
+export default function OpenedChat() {
   const { currentUser } = useAuth();
+  const { selectedConversationId } = useChat();
   const [newMessage, setNewMessage] = useState("");
 
   const bottomRef = useRef(null);
 
-  // Normalize id so cache key is consistent (number vs string from API)
+  const { data: conversations = [] } = useQuery({
+    queryKey: ["conversations"],
+    queryFn: getConversations,
+    retry: false,
+  });
+  const selectedConversation = selectedConversationId != null
+    ? conversations.find((c) => c.id === selectedConversationId || c.id === Number(selectedConversationId))
+    : null;
   const conversationId = selectedConversation?.id != null ? String(selectedConversation.id) : null;
 
   const queryClient = useQueryClient();
   const { data, isPending, isError } = useQuery({
     queryKey: ["messages", conversationId],
-    queryFn: () => getMessages(selectedConversation.id),
+    queryFn: () => getMessages(conversationId),
     enabled: !!conversationId,
   });
 
@@ -40,7 +50,7 @@ export default function OpenedChat({ selectedConversation }) {
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView();
-  }, [selectedConversation, data]);
+  }, [selectedConversationId, data]);
 
   // Join conversation room for real-time messages; leave when switching or unmounting
   useEffect(() => {
@@ -64,20 +74,18 @@ export default function OpenedChat({ selectedConversation }) {
 
   function handleSend(msg) {
     if (!msg.trim() || !conversationId) return;
-    sendMessageMutation.mutate({ conversationId: selectedConversation.id, body: msg });
+    sendMessageMutation.mutate({ conversationId, body: msg });
     setNewMessage("");
   }
 
-  // If no conversation is selected, show empty state
-  if (!selectedConversation) {
+  if (!selectedConversationId) {
     return (
       <div className="bg-gray-800 w-full flex flex-col h-screen items-center justify-center">
-        <p className="text-gray-400 text-lg">
-          Select a conversation to start chatting
-        </p>
+        <p className="text-gray-400 text-lg">Select a conversation to start chatting</p>
       </div>
     );
   }
+  if (!selectedConversation) return <Loader />;
 
   // Get the other user in the conversation (not the current user)
   const otherUser = selectedConversation.users?.find(
