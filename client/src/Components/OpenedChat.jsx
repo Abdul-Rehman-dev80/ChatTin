@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import PersonIcon from "@mui/icons-material/Person";
+import SearchIcon from "@mui/icons-material/Search";
 import SendIcon from "@mui/icons-material/Send";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Contexts/AuthContext";
 import { useChat } from "../Contexts/ChatContext";
 import { SERVER_URL } from "../Services/axiosInstance";
@@ -28,11 +32,14 @@ function formatLastSeen(dateStr) {
 }
 
 export default function OpenedChat() {
+  const navigate = useNavigate();
   const { currentUser } = useAuth();
   const { selectedConversationId, setSelectedConversationId } = useChat();
   const [newMessage, setNewMessage] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const bottomRef = useRef(null);
+  const menuRef = useRef(null);
 
   const { data: conversations = [] } = useQuery({
     queryKey: ["conversations"],
@@ -90,6 +97,19 @@ export default function OpenedChat() {
     return () => socket.off("new_message", onNewMessage);
   }, [conversationId, queryClient]);
 
+  // Close menu when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    }
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
+
   function handleSend(msg) {
     if (!msg.trim() || !conversationId) return;
     sendMessageMutation.mutate({ conversationId, body: msg });
@@ -125,9 +145,15 @@ export default function OpenedChat() {
       ? `Last seen ${formatLastSeen(otherUser.lastSeen)}`
       : "Offline";
 
-      function handleClickProfile() {
-        window.location.href = "/otherUserProfile";
-      }
+  function handleClickProfile() {
+    setMenuOpen(false);
+    navigate("/otherUserProfile");
+  }
+
+  function handleSearchInChat() {
+    setMenuOpen(false);
+    toast.info("Search in chat coming soon");
+  }
 
   if (isPending) return <Loader />;
 
@@ -150,15 +176,43 @@ export default function OpenedChat() {
           />
         </div>
 
-        <div onClick={handleClickProfile} className="flex flex-col flex-1 min-w-0 ml-3">
+        <div
+          onClick={handleClickProfile}
+          className="flex flex-col flex-1 min-w-0 ml-3 cursor-pointer hover:opacity-90"
+        >
           <h3 className="text-base font-semibold text-white truncate">
             {displayName}
           </h3>
           <span className="text-xs text-slate-400">{statusText}</span>
         </div>
-        <button className="p-2 hover:bg-slate-700 rounded-full transition-colors">
-          <MoreVertIcon className="text-slate-300" />
-        </button>
+        <div className="relative" ref={menuRef}>
+          <button
+            onClick={() => setMenuOpen((o) => !o)}
+            className="p-2 hover:bg-slate-700 rounded-full transition-colors"
+            aria-label="More options"
+            aria-expanded={menuOpen}
+          >
+            <MoreVertIcon className="text-slate-300" />
+          </button>
+          {menuOpen && (
+            <div className="absolute right-0 top-full mt-1 py-1 w-44 bg-slate-700 border border-slate-600 rounded-lg shadow-lg z-10">
+              <button
+                onClick={handleClickProfile}
+                className="w-full flex items-center gap-2 px-4 py-2 text-left text-sm text-slate-200 hover:bg-slate-600 transition-colors"
+              >
+                <PersonIcon fontSize="small" />
+                View profile
+              </button>
+              <button
+                onClick={handleSearchInChat}
+                className="w-full flex items-center gap-2 px-4 py-2 text-left text-sm text-slate-200 hover:bg-slate-600 transition-colors"
+              >
+                <SearchIcon fontSize="small" />
+                Search in chat
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Messages Area */}

@@ -15,9 +15,15 @@ export default function MainLayout() {
   const path = location.pathname;
   const { isCreatingConversation, selectedConversationId } = useChat();
 
-  // Mobile: show list OR chat (not both). Desktop: show both side by side.
-  const showListOnMobile = path !== "/" || !selectedConversationId;
-  const showChatOnMobile = path === "/" && !!selectedConversationId;
+  // Mobile: show list OR chat/profile (not both). Desktop: show both side by side.
+  const showListOnMobile =
+    (path === "/" && !selectedConversationId) ||
+    path === "/profile" ||
+    path === "/setting" ||
+    path === "/calls";
+  const showChatOnMobile =
+    (path === "/" && !!selectedConversationId) || path === "/otherUserProfile";
+  const hideBottomNav = path === "/" && !!selectedConversationId;
 
   const renderMiddle = () => {
     if (path === "/" || path === "/otherUserProfile") return <ChatList />;
@@ -48,7 +54,7 @@ export default function MainLayout() {
       <div className="order-2 md:order-1 shrink-0">
         <SideNav />
       </div>
-      <main className={`order-1 md:order-2 flex-1 flex min-w-0 min-h-0 md:pb-0 ${showChatOnMobile ? "pb-0" : "pb-16"}`}>
+      <main className={`order-1 md:order-2 flex-1 flex min-w-0 min-h-0 md:pb-0 ${hideBottomNav ? "pb-0" : "pb-16"}`}>
         <div
           className={`flex flex-col overflow-y-auto border-r border-slate-600 md:w-[350px] md:min-w-[280px] md:shrink-0 ${
             showListOnMobile ? "flex w-full" : "hidden md:flex"

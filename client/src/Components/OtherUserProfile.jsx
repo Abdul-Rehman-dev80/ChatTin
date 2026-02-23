@@ -1,19 +1,15 @@
-import { useState } from "react";
 import { SERVER_URL } from "../Services/axiosInstance.js";
 import { useChat } from "../Contexts/ChatContext.jsx";
 import { useQuery } from "@tanstack/react-query";
 import { getConversations } from "../Services/conversationService.js";
 import { useAuth } from "../Contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 export default function OtherUserProfile() {
+  const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ username: "", about: "" });
-  const [isSaving, setIsSaving] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-
-  const { selectedConversationId, setSelectedConversationId } = useChat();
+  const { selectedConversationId } = useChat();
 
   const { data: conversations = [] } = useQuery({
     queryKey: ["conversations"],
@@ -34,21 +30,33 @@ export default function OtherUserProfile() {
     (user) => user.id !== currentUser?.id,
   );
 
+  if (!otherUser) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-slate-900 text-slate-400">
+        <p className="mb-4">No user selected</p>
+        <button
+          onClick={() => navigate("/")}
+          className="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white text-sm"
+        >
+          Back to chats
+        </button>
+      </div>
+    );
+  }
+
   const avatar =
     otherUser?.pfp && otherUser.pfp !== "defaultPfp.png"
       ? `${SERVER_URL}/${otherUser.pfp}`
       : "/defaultPfp.png";
 
-  const inputClass =
-    "w-full bg-slate-700/80 text-white border border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 placeholder-slate-500";
+  const valueClass =
+    "w-full bg-slate-700/80 text-white border border-slate-600 rounded-lg px-4 py-2.5 text-sm";
 
   return (
     <div className="flex-1 flex flex-col items-center p-8 bg-slate-900 relative">
       <button
-        onClick={() => {
-          window.history.back();
-        }}
-        className="p-2 -ml-2 mr-2 hover:bg-slate-700 rounded-full transition-colors text-slate-300 absolute top-4 left-4"
+        onClick={() => navigate(-1)}
+        className="p-2 -ml-2 mr-2 hover:bg-slate-700 rounded-full transition-colors text-slate-300 absolute top-4 left-4 cursor-pointer"
         aria-label="Back to chat"
       >
         <ArrowBackIcon />
@@ -63,68 +71,28 @@ export default function OtherUserProfile() {
         </div>
         <div className="w-full space-y-4">
           <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-slate-400 mb-1.5"
-            >
+            <span className="block text-sm font-medium text-slate-400 mb-1.5">
               Username
-            </label>
-            <input
-              className={inputClass}
-              type="text"
-              id="username"
-              value={otherUser?.username ?? "—"}
-              readOnly
-              disabled
-            />
+            </span>
+            <p className={valueClass}>{otherUser.username ?? "—"}</p>
           </div>
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-slate-400 mb-1.5"
-            >
+            <span className="block text-sm font-medium text-slate-400 mb-1.5">
               Email
-            </label>
-            <input
-              className={inputClass}
-              type="text"
-              id="email"
-              value={otherUser?.email ?? "—"}
-              readOnly
-              disabled
-            />
+            </span>
+            <p className={valueClass}>{otherUser.email ?? "—"}</p>
           </div>
           <div>
-            <label
-              htmlFor="phone"
-              className="block text-sm font-medium text-slate-400 mb-1.5"
-            >
+            <span className="block text-sm font-medium text-slate-400 mb-1.5">
               Phone
-            </label>
-            <input
-              className={inputClass}
-              type="text"
-              id="phone"
-              value={otherUser?.phone ?? "—"}
-              readOnly
-              disabled
-            />
+            </span>
+            <p className={valueClass}>{otherUser.phone ?? "—"}</p>
           </div>
           <div>
-            <label
-              htmlFor="about"
-              className="block text-sm font-medium text-slate-400 mb-1.5"
-            >
+            <span className="block text-sm font-medium text-slate-400 mb-1.5">
               About
-            </label>
-            <input
-              className={inputClass}
-              type="text"
-              id="about"
-              value={otherUser?.about ?? ""}
-              readOnly
-              disabled
-            />
+            </span>
+            <p className={valueClass}>{otherUser.about ?? ""}</p>
           </div>
         </div>
       </div>
