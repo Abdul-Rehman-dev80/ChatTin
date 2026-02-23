@@ -24,7 +24,7 @@ export default function SideNav() {
     <li>
       <Link
         to={to}
-        className="flex hover:bg-gray-700 rounded-lg p-3 transition-colors text-gray-300 hover:text-white justify-center"
+        className="flex hover:bg-slate-700 rounded-lg p-3 transition-colors text-slate-300 hover:text-white justify-center"
         aria-label={label}
       >
         <Icon fontSize="large" />
@@ -36,7 +36,7 @@ export default function SideNav() {
     <>
       {/* Desktop: vertical left nav */}
       <nav
-        className="hidden md:flex flex-col justify-between items-center py-4 h-screen w-[70px] min-w-[70px] bg-gray-800 border-r border-gray-700"
+        className="hidden md:flex flex-col justify-between items-center py-4 h-screen w-[70px] min-w-[70px] bg-slate-800 border-r border-slate-600"
         aria-label="Main navigation"
       >
         <ul className="flex flex-col gap-1">
@@ -53,7 +53,7 @@ export default function SideNav() {
 
       {/* Mobile: bottom bar (hidden when chat is open) */}
       <nav
-        className={`md:hidden fixed bottom-0 left-0 right-0 z-20 flex flex-row justify-around items-center h-16 bg-gray-800 border-t border-gray-700 ${hideBottomNav ? "hidden" : "flex"}`}
+        className={`md:hidden fixed bottom-0 left-0 right-0 z-20 flex flex-row justify-around items-center h-16 bg-slate-800 border-t border-slate-600 ${hideBottomNav ? "hidden" : "flex"}`}
         aria-label="Main navigation"
       >
         {navLinks.map((item) => (

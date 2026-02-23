@@ -98,8 +98,8 @@ export default function OpenedChat() {
 
   if (!selectedConversationId) {
     return (
-      <div className="bg-gray-800 w-full flex flex-col h-screen items-center justify-center">
-        <p className="text-gray-400 text-lg">Select a conversation to start chatting</p>
+      <div className="bg-slate-800 w-full flex flex-col h-screen items-center justify-center">
+        <p className="text-slate-400 text-lg">Select a conversation to start chatting</p>
       </div>
     );
   }
@@ -128,19 +128,19 @@ export default function OpenedChat() {
   if (isPending) return <Loader />;
 
   return (
-    <div className="bg-gray-800 w-full flex flex-col h-screen">
+    <div className="bg-slate-800 w-full flex flex-col h-screen">
       {/* Chat Header */}
-      <div className="flex items-center h-18 px-4 border-b border-gray-700 bg-gray-800">
+      <div className="flex items-center h-18 px-4 border-b border-slate-600 bg-slate-800">
         <button
           onClick={() => setSelectedConversationId(null)}
-          className="md:hidden p-2 -ml-2 mr-2 hover:bg-gray-700 rounded-full transition-colors text-gray-300"
+          className="md:hidden p-2 -ml-2 mr-2 hover:bg-slate-700 rounded-full transition-colors text-slate-300"
           aria-label="Back to chats"
         >
           <ArrowBackIcon />
         </button>
         <div className="relative shrink-0">
           <img
-            className="w-12 h-12 rounded-full object-cover border-2 border-gray-600"
+            className="w-12 h-12 rounded-full object-cover border-2 border-slate-600"
             src={avatarUrl}
             alt={`${displayName} avatar`}
           />
@@ -150,18 +150,18 @@ export default function OpenedChat() {
           <h3 className="text-base font-semibold text-white truncate">
             {displayName}
           </h3>
-          <span className="text-xs text-gray-400">{statusText}</span>
+          <span className="text-xs text-slate-400">{statusText}</span>
         </div>
-        <button className="p-2 hover:bg-gray-700 rounded-full transition-colors">
-          <MoreVertIcon className="text-gray-300" />
+        <button className="p-2 hover:bg-slate-700 rounded-full transition-colors">
+          <MoreVertIcon className="text-slate-300" />
         </button>
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto bg-gray-900 p-4">
+      <div className="flex-1 overflow-y-auto bg-slate-900 p-4">
         <div className="flex flex-col gap-3">
           {!isPending && (!data || data.length === 0) && (
-            <p className="text-gray-500 text-center py-8">
+            <p className="text-slate-500 text-center py-8">
               No messages yet. Say hi!
             </p>
           )}
@@ -173,16 +173,16 @@ export default function OpenedChat() {
               <div
                 className={`max-w-[70%] rounded-2xl px-4 py-2 ${
                   msg.senderId === currentUser.id
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-700 text-gray-100"
+                    ? "bg-cyan-600 text-white"
+                    : "bg-slate-700 text-slate-100"
                 }`}
               >
                 <p className="text-sm wrap-break-words">{msg.body}</p>
                 <p
                   className={`text-xs mt-1 ${
                     msg.senderId === currentUser.id
-                      ? "text-blue-100"
-                      : "text-gray-400"
+                      ? "text-cyan-100"
+                      : "text-slate-400"
                   }`}
                 >
                   {new Date(msg.createdAt).toLocaleTimeString([], {
@@ -199,7 +199,7 @@ export default function OpenedChat() {
       </div>
 
       {/* Message Input */}
-      <div className="flex items-center p-4 border-t border-gray-700 bg-gray-800">
+      <div className="flex items-center p-4 border-t border-slate-600 bg-slate-800">
         <input
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
@@ -207,12 +207,12 @@ export default function OpenedChat() {
             if (e.key === "Enter") handleSend(newMessage);
           }}
           type="text"
-          className="flex-1 bg-gray-700 text-white px-4 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+          className="flex-1 bg-slate-700 text-white px-4 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-cyan-500 placeholder-slate-400"
           placeholder="Type a message..."
         />
         <button
           onClick={() => handleSend(newMessage)}
-          className="ml-3 p-3 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors text-white"
+          className="ml-3 p-3 bg-cyan-600 hover:bg-cyan-700 rounded-full transition-colors text-white"
         >
           <SendIcon />
         </button>

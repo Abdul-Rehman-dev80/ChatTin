@@ -7,16 +7,16 @@ export default function ChatCard({ details }) {
   const avatar = pfp && pfp !== "defaultPfp.png" ? `${SERVER_URL}/${pfp}` : "/defaultPfp.png";
 
   return (
-    <div className="flex items-center h-[72px] px-3 py-2 bg-gray-600 hover:bg-gray-800 active:bg-gray-800 rounded-lg cursor-pointer transition-colors mb-1">
+    <div className="flex items-center h-[72px] px-3 py-2 bg-slate-600 hover:bg-slate-800 active:bg-slate-800 rounded-lg cursor-pointer transition-colors mb-1">
       <div className="relative shrink-0">
         <img
-          className="w-12 h-12 rounded-full object-cover border-2 border-gray-500"
+          className="w-12 h-12 rounded-full object-cover border-2 border-slate-500"
           src={avatar}
           alt={username ? `${username} avatar` : "User avatar"}
         />
         {hasUnread && (
           <span
-            className="absolute top-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-600"
+            className="absolute top-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-slate-600"
             aria-label="Unread messages"
           />
         )}
@@ -28,14 +28,14 @@ export default function ChatCard({ details }) {
             {username || "Unknown User"}
           </h3>
           {time && (
-            <span className="text-xs font-medium text-gray-400 ml-2">
+            <span className="text-xs font-medium text-slate-400 ml-2">
               {time}
             </span>
           )}
         </div>
 
         <div className="flex justify-between items-center">
-          <p className="text-sm text-gray-300 truncate pr-4">
+          <p className="text-sm text-slate-300 truncate pr-4">
             {lastMessage || ""}
           </p>
         </div>

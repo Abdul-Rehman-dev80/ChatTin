@@ -63,19 +63,19 @@ export default function Register() {
   };
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center bg-gray-900 px-4 py-8">
+    <div className="fixed inset-0 flex justify-center items-center bg-slate-900 px-4 py-8">
       <form
         onSubmit={handleRegister}
-        className="bg-gray-800 flex flex-col p-8 rounded-xl w-full max-w-[400px] shadow-2xl border border-gray-700"
+        className="bg-slate-800 flex flex-col p-8 rounded-xl w-full max-w-[400px] shadow-2xl border border-slate-600"
       >
         <h1 className="text-3xl font-bold mb-6 text-center text-white">ChatTin</h1>
-        <hr className="mb-6 border-gray-700" />
+        <hr className="mb-6 border-slate-600" />
         
-        <label htmlFor="username" className="text-sm font-medium text-gray-300 mb-2">
+        <label htmlFor="username" className="text-sm font-medium text-slate-300 mb-2">
           Username
         </label>
         <input
-          className="bg-gray-700 text-white border border-gray-600 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+          className="bg-slate-700 text-white border border-slate-600 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent placeholder-slate-400"
           value={formData.username}
           onChange={handleChange}
           type="text"
@@ -83,11 +83,11 @@ export default function Register() {
           placeholder="Choose a username"
         />
 
-        <label htmlFor="email" className="text-sm font-medium text-gray-300 mb-2">
+        <label htmlFor="email" className="text-sm font-medium text-slate-300 mb-2">
           Email
         </label>
         <input
-          className="bg-gray-700 text-white border border-gray-600 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+          className="bg-slate-700 text-white border border-slate-600 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent placeholder-slate-400"
           value={formData.email}
           onChange={handleChange}
           type="email"
@@ -95,11 +95,11 @@ export default function Register() {
           placeholder="Enter your email"
         />
 
-        <label htmlFor="phone" className="text-sm font-medium text-gray-300 mb-2">
+        <label htmlFor="phone" className="text-sm font-medium text-slate-300 mb-2">
           Phone Number
         </label>
         <input
-          className="bg-gray-700 text-white border border-gray-600 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+          className="bg-slate-700 text-white border border-slate-600 rounded-lg px-4 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent placeholder-slate-400"
           value={formData.phone}
           onChange={handleChange}
           type="text"
@@ -107,12 +107,12 @@ export default function Register() {
           placeholder="Enter your phone number"
         />
 
-        <label htmlFor="password" className="text-sm font-medium text-gray-300 mb-2">
+        <label htmlFor="password" className="text-sm font-medium text-slate-300 mb-2">
           Password
         </label>
         <div className="relative mb-6">
           <input
-            className="bg-gray-700 text-white border border-gray-600 rounded-lg px-4 py-3 pr-12 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+            className="bg-slate-700 text-white border border-slate-600 rounded-lg px-4 py-3 pr-12 w-full focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent placeholder-slate-400"
             value={formData.password}
             onChange={handleChange}
             type={showPassword ? "text" : "password"}
@@ -122,7 +122,7 @@ export default function Register() {
           <button
             type="button"
             onClick={() => setShowPassword((p) => !p)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
@@ -132,14 +132,14 @@ export default function Register() {
         <button
           type="submit"
           disabled={mutation.isPending}
-          className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors"
+          className="bg-cyan-600 hover:bg-cyan-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition-colors"
         >
           {mutation.isPending ? "Registering..." : "Register"}
         </button>
 
-        <p className="text-sm text-gray-400 text-center mt-4">
+        <p className="text-sm text-slate-400 text-center mt-4">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-500 hover:text-blue-400">
+          <Link to="/login" className="text-cyan-400 hover:text-cyan-300">
             Login
           </Link>
         </p>

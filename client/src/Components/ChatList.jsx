@@ -65,7 +65,7 @@ export default function ChatList() {
   if (isPending) return <Loader />;
 
   return (
-    <div className="bg-gray-700 w-full h-full flex flex-col">
+    <div className="bg-slate-700 w-full h-full flex flex-col">
       <div className="p-2">
         <h1 className="text-2xl font-bold text-white text-center mb-2">
           ChatTin
@@ -75,7 +75,7 @@ export default function ChatList() {
 
       <div className="flex-1 overflow-y-auto p-2">
         {items.length === 0 ? (
-          <p className="text-gray-400 text-center">
+          <p className="text-slate-400 text-center">
             {search ? "No users found" : "No conversations yet"}
           </p>
         ) : (
@@ -96,7 +96,7 @@ export default function ChatList() {
                     ? handleSelectExistingConversation(item)
                     : handleClickUser(user)
                 }
-                className={isSelected ? "bg-gray-800" : ""}
+                className={isSelected ? "bg-slate-800" : ""}
               >
                 <ChatCard
                   details={{

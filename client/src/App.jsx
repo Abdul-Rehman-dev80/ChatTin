@@ -10,7 +10,7 @@ import MainLayout from "./Components/MainLayout";
 
 function App() {
   return (
-    <div className="h-screen overflow-hidden">
+    <div className="h-screen overflow-hidden bg-slate-900">
       <AuthProvider>
         <BrowserRouter>
           <Routes>

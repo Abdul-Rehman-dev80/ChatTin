@@ -14,7 +14,7 @@ export default function Profile() {
   const avatar = currentUser?.pfp && currentUser.pfp !== "defaultPfp.png" ? `${SERVER_URL}/${currentUser.pfp}` : "/defaultPfp.png";
 
   const inputClass =
-    "w-full bg-gray-700/80 text-white border border-gray-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 placeholder-gray-500";
+    "w-full bg-slate-700/80 text-white border border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 placeholder-slate-500";
 
   const handleEdit = () => {
     setFormData({
@@ -59,16 +59,16 @@ export default function Profile() {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center p-8 bg-gray-900">
+    <div className="flex-1 flex flex-col items-center p-8 bg-slate-900">
       <div className="w-full max-w-sm flex flex-col items-center gap-6">
         <div className="flex flex-col items-center gap-2">
           <img
-              className="w-24 h-24 rounded-full object-cover ring-2 ring-gray-600"
+              className="w-24 h-24 rounded-full object-cover ring-2 ring-slate-600"
               src={avatar}
               alt="Profile"
             />
             {isEditing && (
-              <label className="text-xs text-blue-400 hover:text-blue-300 cursor-pointer">
+              <label className="text-xs text-cyan-400 hover:text-cyan-300 cursor-pointer">
                 Change photo
                 <input
                   ref={fileInputRef}
@@ -80,11 +80,11 @@ export default function Profile() {
                 />
               </label>
             )}
-          {isUploading && <span className="text-xs text-gray-400">Uploading...</span>}
+          {isUploading && <span className="text-xs text-slate-400">Uploading...</span>}
         </div>
         <div className="w-full space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-400 mb-1.5">
+              <label htmlFor="username" className="block text-sm font-medium text-slate-400 mb-1.5">
                 Username
               </label>
               <input
@@ -98,7 +98,7 @@ export default function Profile() {
               />
             </div>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-400 mb-1.5">
+              <label htmlFor="email" className="block text-sm font-medium text-slate-400 mb-1.5">
                 Email
               </label>
               <input
@@ -111,7 +111,7 @@ export default function Profile() {
               />
             </div>
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-400 mb-1.5">
+              <label htmlFor="phone" className="block text-sm font-medium text-slate-400 mb-1.5">
                 Phone
               </label>
               <input
@@ -124,7 +124,7 @@ export default function Profile() {
               />
             </div>
             <div>
-              <label htmlFor="about" className="block text-sm font-medium text-gray-400 mb-1.5">
+              <label htmlFor="about" className="block text-sm font-medium text-slate-400 mb-1.5">
                 About
               </label>
               <input
@@ -144,14 +144,14 @@ export default function Profile() {
               <button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium"
+                className="flex-1 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50 text-white text-sm font-medium"
               >
                 {isSaving ? "Saving..." : "Save"}
               </button>
               <button
                 onClick={handleCancel}
                 disabled={isSaving}
-                className="flex-1 py-2 rounded-lg bg-gray-600 hover:bg-gray-700 disabled:opacity-50 text-white text-sm font-medium"
+                className="flex-1 py-2 rounded-lg bg-slate-600 hover:bg-slate-700 disabled:opacity-50 text-white text-sm font-medium"
               >
                 Cancel
               </button>
@@ -159,7 +159,7 @@ export default function Profile() {
           ) : (
             <button
               onClick={handleEdit}
-              className="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium"
+              className="w-full py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-medium"
             >
               Edit
             </button>

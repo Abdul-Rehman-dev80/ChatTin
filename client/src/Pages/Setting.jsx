@@ -13,7 +13,7 @@ export default function Setting() {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center p-8 bg-gray-900">
+    <div className="flex-1 flex flex-col items-center p-8 bg-slate-900">
       <div className="w-full max-w-sm">
         <h2 className="text-xl font-semibold text-white mb-6">Settings</h2>
         <button

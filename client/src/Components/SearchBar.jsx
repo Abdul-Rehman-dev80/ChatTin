@@ -14,7 +14,7 @@ export default function SearchBar({ onSearchChange }) {
   }, [search, onSearchChange]);
 
   return (
-    <div className="bg-gray-800 rounded-full py-2 px-4 flex justify-between items-center">
+    <div className="bg-slate-800 rounded-full py-2 px-4 flex justify-between items-center">
       <input
         className="bg-transparent outline-none text-white flex-1"
         type="text"
@@ -23,7 +23,7 @@ export default function SearchBar({ onSearchChange }) {
         onChange={(e) => setSearch(e.target.value)}
       />
       {search.trim() === "" && (
-        <button className="text-gray-300 hover:text-white">
+        <button className="text-slate-300 hover:text-white">
           <SearchIcon />
         </button>
       )}

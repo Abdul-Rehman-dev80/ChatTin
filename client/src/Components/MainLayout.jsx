@@ -30,9 +30,9 @@ export default function MainLayout() {
     if (path !== "/") return <EmptyChatPlaceholder />;
     if (isCreatingConversation) {
       return (
-        <div className="bg-gray-800 w-full flex flex-col h-screen items-center justify-center">
+        <div className="bg-slate-800 w-full flex flex-col h-screen items-center justify-center">
           <Loader />
-          <p className="text-gray-400 mt-3">Starting conversation...</p>
+          <p className="text-slate-400 mt-3">Starting conversation...</p>
         </div>
       );
     }
@@ -40,20 +40,20 @@ export default function MainLayout() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-full w-full bg-gray-900">
+    <div className="flex flex-col md:flex-row h-full w-full bg-slate-900">
       <div className="order-2 md:order-1 shrink-0">
         <SideNav />
       </div>
-      <main className={`order-1 md:order-2 flex-1 flex min-w-0 min-h-0 md:pb-0`}>
+      <main className={`order-1 md:order-2 flex-1 flex min-w-0 min-h-0 md:pb-0 ${showChatOnMobile ? "pb-0" : "pb-16"}`}>
         <div
-          className={`flex flex-col overflow-y-auto border-r border-gray-600 md:w-[350px] md:min-w-[280px] md:shrink-0 ${
+          className={`flex flex-col overflow-y-auto border-r border-slate-600 md:w-[350px] md:min-w-[280px] md:shrink-0 ${
             showListOnMobile ? "flex w-full" : "hidden md:flex"
           }`}
         >
           {renderMiddle()}
         </div>
         <div
-          className={`flex flex-col overflow-y-auto bg-gray-900 flex-1 min-w-0 ${
+          className={`flex flex-col overflow-y-auto bg-slate-900 flex-1 min-w-0 ${
             showChatOnMobile ? "flex" : "hidden md:flex"
           }`}
         >
