@@ -125,6 +125,10 @@ export default function OpenedChat() {
       ? `Last seen ${formatLastSeen(otherUser.lastSeen)}`
       : "Offline";
 
+      function handleClickProfile() {
+        window.location.href = "/otherUserProfile";
+      }
+
   if (isPending) return <Loader />;
 
   return (
@@ -146,7 +150,7 @@ export default function OpenedChat() {
           />
         </div>
 
-        <div className="flex flex-col flex-1 min-w-0 ml-3">
+        <div onClick={handleClickProfile} className="flex flex-col flex-1 min-w-0 ml-3">
           <h3 className="text-base font-semibold text-white truncate">
             {displayName}
           </h3>

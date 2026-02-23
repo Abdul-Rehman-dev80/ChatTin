@@ -21,6 +21,7 @@ function App() {
               <Route path="profile" element={null} />
               <Route path="setting" element={null} />
               <Route path="calls" element={null} />
+              <Route path="otherUserProfile" element={null} />
             </Route>
             <Route path="*" element={<PageNotFound />} />
           </Routes>

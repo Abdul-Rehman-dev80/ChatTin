@@ -35,7 +35,14 @@ export const createConversation = async (req, res) => {
             model: User,
             as: "users",
             through: { attributes: [] },
-            attributes: ["id", "username", "phone", "pfp", "isOnline", "lastSeen"],
+            attributes: [
+              "id",
+              "username",
+              "phone",
+              "pfp",
+              "isOnline",
+              "lastSeen",
+            ],
           },
         ],
       });
@@ -60,7 +67,14 @@ export const createConversation = async (req, res) => {
           model: User,
           as: "users",
           through: { attributes: [] },
-          attributes: ["id", "username", "phone", "pfp", "isOnline", "lastSeen"],
+          attributes: [
+            "id",
+            "username",
+            "phone",
+            "pfp",
+            "isOnline",
+            "lastSeen",
+          ],
         },
       ],
     });
@@ -89,7 +103,7 @@ export const listConversations = async (req, res) => {
          ) AS "hasUnread"
        FROM conversation_member cm
        WHERE cm.user_id = :userId`,
-      { replacements: { userId }, type: sequelize.QueryTypes.SELECT }
+      { replacements: { userId }, type: sequelize.QueryTypes.SELECT },
     );
 
     const list = Array.isArray(rows) ? rows : [];
@@ -110,7 +124,16 @@ export const listConversations = async (req, res) => {
           model: User,
           as: "users",
           through: { attributes: [] },
-          attributes: ["id", "username", "phone", "pfp", "isOnline", "lastSeen"],
+          attributes: [
+            "id",
+            "username",
+            "phone",
+            "email",
+            "about",
+            "pfp",
+            "isOnline",
+            "lastSeen",
+          ],
         },
       ],
       order: [["updatedAt", "DESC"]],

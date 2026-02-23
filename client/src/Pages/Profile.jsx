@@ -67,7 +67,6 @@ export default function Profile() {
               src={avatar}
               alt="Profile"
             />
-            {isEditing && (
               <label className="text-xs text-cyan-400 hover:text-cyan-300 cursor-pointer">
                 Change photo
                 <input
@@ -79,7 +78,6 @@ export default function Profile() {
                   className="hidden"
                 />
               </label>
-            )}
           {isUploading && <span className="text-xs text-slate-400">Uploading...</span>}
         </div>
         <div className="w-full space-y-4">

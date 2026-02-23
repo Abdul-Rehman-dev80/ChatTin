@@ -15,7 +15,11 @@ export default function ChatList() {
   const [search, setSearch] = useState("");
   const { currentUser } = useAuth();
   const queryClient = useQueryClient();
-  const { setSelectedConversationId, selectedConversationId, setIsCreatingConversation } = useChat();
+  const {
+    setSelectedConversationId,
+    selectedConversationId,
+    setIsCreatingConversation,
+  } = useChat();
 
   // Fetch conversations (shown when search is empty)
   const {
@@ -96,7 +100,6 @@ export default function ChatList() {
                     ? handleSelectExistingConversation(item)
                     : handleClickUser(user)
                 }
-                className={isSelected ? "bg-slate-800" : ""}
               >
                 <ChatCard
                   details={{
@@ -112,13 +115,18 @@ export default function ChatList() {
                         })
                       : "",
                     hasUnread: isConversation ? item.hasUnread : false,
+                    isSelected,
                   }}
                 />
               </div>
             );
           })
         )}
-        {isError && <p className="text-red-500 text-center">Error loading conversations</p>}
+        {isError && (
+          <p className="text-red-500 text-center">
+            Error loading conversations
+          </p>
+        )}
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import Setting from "../Pages/Setting";
 import Calls from "../Pages/Calls";
 import Loader from "./Loader";
 import { useChat } from "../Contexts/ChatContext";
+import OtherUserProfile from "./OtherUserProfile";
 
 export default function MainLayout() {
   const location = useLocation();
@@ -19,7 +20,7 @@ export default function MainLayout() {
   const showChatOnMobile = path === "/" && !!selectedConversationId;
 
   const renderMiddle = () => {
-    if (path === "/") return <ChatList />;
+    if (path === "/" || path === "/otherUserProfile") return <ChatList />;
     if (path === "/profile") return <Profile />;
     if (path === "/setting") return <Setting />;
     if (path === "/calls") return <Calls />;
@@ -27,7 +28,7 @@ export default function MainLayout() {
   };
 
   const renderRight = () => {
-    if (path !== "/") return <EmptyChatPlaceholder />;
+    if (path !== "/" && path !== "/otherUserProfile") return <EmptyChatPlaceholder />;
     if (isCreatingConversation) {
       return (
         <div className="bg-slate-800 w-full flex flex-col h-screen items-center justify-center">
@@ -35,6 +36,9 @@ export default function MainLayout() {
           <p className="text-slate-400 mt-3">Starting conversation...</p>
         </div>
       );
+    }
+    if(path === "/otherUserProfile") {
+      return <OtherUserProfile />
     }
     return <OpenedChat />;
   };
