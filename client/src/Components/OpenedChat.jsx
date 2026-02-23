@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import SendIcon from "@mui/icons-material/Send";
 import { useAuth } from "../Contexts/AuthContext";
@@ -28,7 +29,7 @@ function formatLastSeen(dateStr) {
 
 export default function OpenedChat() {
   const { currentUser } = useAuth();
-  const { selectedConversationId } = useChat();
+  const { selectedConversationId, setSelectedConversationId } = useChat();
   const [newMessage, setNewMessage] = useState("");
 
   const bottomRef = useRef(null);
@@ -130,6 +131,13 @@ export default function OpenedChat() {
     <div className="bg-gray-800 w-full flex flex-col h-screen">
       {/* Chat Header */}
       <div className="flex items-center h-18 px-4 border-b border-gray-700 bg-gray-800">
+        <button
+          onClick={() => setSelectedConversationId(null)}
+          className="md:hidden p-2 -ml-2 mr-2 hover:bg-gray-700 rounded-full transition-colors text-gray-300"
+          aria-label="Back to chats"
+        >
+          <ArrowBackIcon />
+        </button>
         <div className="relative shrink-0">
           <img
             className="w-12 h-12 rounded-full object-cover border-2 border-gray-600"

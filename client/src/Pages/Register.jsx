@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { toast } from "react-toastify";
 import { useNavigate, Link } from "react-router";
 import { registerUser } from "../Services/authService";
@@ -13,6 +15,7 @@ export default function Register() {
     phone: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   function handleChange(e) {
     const { id, value } = e.target;
@@ -107,14 +110,24 @@ export default function Register() {
         <label htmlFor="password" className="text-sm font-medium text-gray-300 mb-2">
           Password
         </label>
-        <input
-          className="bg-gray-700 text-white border border-gray-600 rounded-lg px-4 py-3 mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
-          value={formData.password}
-          onChange={handleChange}
-          type="password"
-          id="password"
-          placeholder="Create a password"
-        />
+        <div className="relative mb-6">
+          <input
+            className="bg-gray-700 text-white border border-gray-600 rounded-lg px-4 py-3 pr-12 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400"
+            value={formData.password}
+            onChange={handleChange}
+            type={showPassword ? "text" : "password"}
+            id="password"
+            placeholder="Create a password"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((p) => !p)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+          </button>
+        </div>
         
         <button
           type="submit"

@@ -8,6 +8,10 @@ function ProtectedRoutes({ children }) {
     window.location.href = "/login";
     return null; // Don't render anything while redirecting
   }
+  if (currentUser && !currentUser.authenticated) {
+    window.location.href = "/register";
+    return null; // Don't render anything while redirecting
+  }
 
   // If authenticated, render the protected content
   return children;

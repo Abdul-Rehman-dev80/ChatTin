@@ -12,7 +12,11 @@ import { useChat } from "../Contexts/ChatContext";
 export default function MainLayout() {
   const location = useLocation();
   const path = location.pathname;
-  const { isCreatingConversation } = useChat();
+  const { isCreatingConversation, selectedConversationId } = useChat();
+
+  // Mobile: show list OR chat (not both). Desktop: show both side by side.
+  const showListOnMobile = path !== "/" || !selectedConversationId;
+  const showChatOnMobile = path === "/" && !!selectedConversationId;
 
   const renderMiddle = () => {
     if (path === "/") return <ChatList />;
@@ -36,16 +40,26 @@ export default function MainLayout() {
   };
 
   return (
-    <div className="flex h-full w-full bg-gray-900">
-      <SideNav />
-      <div className="flex flex-1 min-w-0">
-        <div className="w-87.5 min-w-67.5 shrink-0 border-r border-gray-600 flex flex-col overflow-y-auto">
+    <div className="flex flex-col md:flex-row h-full w-full bg-gray-900">
+      <div className="order-2 md:order-1 shrink-0">
+        <SideNav />
+      </div>
+      <main className={`order-1 md:order-2 flex-1 flex min-w-0 min-h-0 md:pb-0`}>
+        <div
+          className={`flex flex-col overflow-y-auto border-r border-gray-600 md:w-[350px] md:min-w-[280px] md:shrink-0 ${
+            showListOnMobile ? "flex w-full" : "hidden md:flex"
+          }`}
+        >
           {renderMiddle()}
         </div>
-        <div className="flex-1 min-w-75 flex flex-col overflow-y-auto bg-gray-900">
+        <div
+          className={`flex flex-col overflow-y-auto bg-gray-900 flex-1 min-w-0 ${
+            showChatOnMobile ? "flex" : "hidden md:flex"
+          }`}
+        >
           {renderRight()}
         </div>
-      </div>
+      </main>
     </div>
   );
 }
