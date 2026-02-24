@@ -27,6 +27,8 @@ export function CallProvider({ children }) {
   const [isInitiator, setIsInitiator] = useState(false);
   const [remoteUser, setRemoteUser] = useState(null);
   const [incomingCall, setIncomingCall] = useState(null);
+  /** Remote media stream (set by useWebRTC when the other peer's track arrives) */
+  const [remoteStream, setRemoteStream] = useState(null);
 
   // Refs for Phase 3 (WebRTC): the hook will set these when setting up the peer connection
   const localStreamRef = useRef(null);
@@ -39,6 +41,7 @@ export function CallProvider({ children }) {
     setIsInitiator(false);
     setRemoteUser(null);
     setIncomingCall(null);
+    setRemoteStream(null);
   }, []);
 
   // ---- Actions ----
@@ -157,6 +160,7 @@ export function CallProvider({ children }) {
     isInitiator,
     remoteUser,
     incomingCall,
+    remoteStream,
     // Refs for WebRTC (Phase 3)
     localStreamRef,
     peerConnectionRef,
