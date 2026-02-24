@@ -14,6 +14,7 @@ import socketAuth from "./src/Middleware/authMiddleware.js";
 import conversationRouter from "./src/Routes/ConversationRoute.js";
 import messageRouter from "./src/Routes/messageRoute.js";
 import User from "./src/Model/User.js";
+import { registerCallHandlers } from "./src/socket/callHandlers.js";
 
 dotenv.config();
 
@@ -60,6 +61,9 @@ io.on("connection", async (socket) => {
     } catch (err) {
       console.error("Status update error:", err);
     }
+    // So we can send call events to this user by id (e.g. "user:123")
+    socket.join(`user:${userId}`);
+    registerCallHandlers(io, socket);
   }
   socket.on("join_conversation", (conversationId) => {
     if (conversationId) socket.join(`conversation:${conversationId}`);
