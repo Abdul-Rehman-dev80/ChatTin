@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CallIcon from "@mui/icons-material/Call";
+import VideocamIcon from "@mui/icons-material/Videocam";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PersonIcon from "@mui/icons-material/Person";
 import SearchIcon from "@mui/icons-material/Search";
@@ -8,6 +10,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Contexts/AuthContext";
 import { useChat } from "../Contexts/ChatContext";
+import { useCall } from "../Contexts/CallContext";
 import { SERVER_URL } from "../Services/axiosInstance";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getMessages, sendMessage } from "../Services/messageService";
@@ -35,6 +38,7 @@ export default function OpenedChat() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const { selectedConversationId, setSelectedConversationId } = useChat();
+  const { startCall } = useCall();
   const [newMessage, setNewMessage] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -184,6 +188,22 @@ export default function OpenedChat() {
             {displayName}
           </h3>
           <span className="text-xs text-slate-400">{statusText}</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => startCall(conversationId, otherUser, false)}
+            className="p-2 hover:bg-slate-700 rounded-full transition-colors text-slate-300"
+            aria-label="Voice call"
+          >
+            <CallIcon />
+          </button>
+          <button
+            onClick={() => startCall(conversationId, otherUser, true)}
+            className="p-2 hover:bg-slate-700 rounded-full transition-colors text-slate-300"
+            aria-label="Video call"
+          >
+            <VideocamIcon />
+          </button>
         </div>
         <div className="relative" ref={menuRef}>
           <button

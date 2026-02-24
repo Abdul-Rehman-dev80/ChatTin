@@ -9,6 +9,7 @@ import Calls from "../Pages/Calls";
 import Loader from "./Loader";
 import { useChat } from "../Contexts/ChatContext";
 import OtherUserProfile from "./OtherUserProfile";
+import CallUI from "./CallUI";
 
 export default function MainLayout() {
   const location = useLocation();
@@ -51,6 +52,7 @@ export default function MainLayout() {
 
   return (
     <div className="flex flex-col md:flex-row h-full w-full bg-slate-900">
+      <CallUI />
       <div className="order-2 md:order-1 shrink-0">
         <SideNav />
       </div>

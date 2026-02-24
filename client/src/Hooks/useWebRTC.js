@@ -3,7 +3,13 @@ import { socket } from "../Services/socketService";
 
 const ICE_SERVERS = [{ urls: "stun:stun.l.google.com:19302" }];
 
-export function useWebRTC({ remoteUserId, isInitiator, isVideo, setRemoteStream }) {
+export function useWebRTC({
+  remoteUserId,
+  isInitiator,
+  isVideo,
+  setRemoteStream,
+  localStreamRef,
+}) {
   const [isConnecting, setIsConnecting] = useState(true);
 
   useEffect(() => {
@@ -75,15 +81,20 @@ export function useWebRTC({ remoteUserId, isInitiator, isVideo, setRemoteStream 
         // 1. Get Camera/Mic
         localStream = await navigator.mediaDevices.getUserMedia({
           audio: true,
-          video: isVideo
+          video: isVideo,
         });
+        if (localStreamRef) localStreamRef.current = localStream;
 
         // 2. Add our tracks to the connection
-        localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+        localStream
+          .getTracks()
+          .forEach((track) => pc.addTrack(track, localStream));
 
         // 3. If we're callee and offer arrived before we had tracks, process it now
         if (pendingOffer) {
-          await pc.setRemoteDescription(new RTCSessionDescription(pendingOffer));
+          await pc.setRemoteDescription(
+            new RTCSessionDescription(pendingOffer),
+          );
           await drainIceQueue();
           const answer = await pc.createAnswer();
           await pc.setLocalDescription(answer);
@@ -97,7 +108,10 @@ export function useWebRTC({ remoteUserId, isInitiator, isVideo, setRemoteStream 
         // 5. Send our network "address" (ICE) to the other peer
         pc.onicecandidate = (event) => {
           if (event.candidate) {
-            socket.emit("webrtc:ice-candidate", { targetUserId: remoteUserId, candidate: event.candidate });
+            socket.emit("webrtc:ice-candidate", {
+              targetUserId: remoteUserId,
+              candidate: event.candidate,
+            });
           }
         };
 
@@ -118,13 +132,14 @@ export function useWebRTC({ remoteUserId, isInitiator, isVideo, setRemoteStream 
 
     // CLEANUP: Close everything when the component disappears
     return () => {
-      localStream?.getTracks().forEach(t => t.stop());
+      localStream?.getTracks().forEach((t) => t.stop());
       pc.close();
+      if (localStreamRef) localStreamRef.current = null;
       socket.off("webrtc:offer", handleOffer);
       socket.off("webrtc:answer", handleAnswer);
       socket.off("webrtc:ice-candidate", handleIceCandidate);
     };
-  }, [remoteUserId, isInitiator, isVideo, setRemoteStream]);
+  }, [remoteUserId, isInitiator, isVideo, setRemoteStream, localStreamRef]);
 
   return { isConnecting };
 }
