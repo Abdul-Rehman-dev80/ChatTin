@@ -5,6 +5,7 @@ import { ToastContainer } from "react-toastify";
 import PageNotFound from "./Components/PageNotFound";
 import AuthProvider from "./Contexts/AuthContext";
 import { ChatProvider } from "./Contexts/ChatContext";
+import { CallProvider } from "./Contexts/CallContext";
 import ProtectedRoutes from "./helpers/ProtectedRoutes";
 import MainLayout from "./Components/MainLayout";
 
@@ -16,7 +17,18 @@ function App() {
           <Routes>
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/" element={<ProtectedRoutes><ChatProvider><MainLayout /></ChatProvider></ProtectedRoutes>}>
+            <Route
+              path="/"
+              element={
+                <ProtectedRoutes>
+                  <ChatProvider>
+                    <CallProvider>
+                      <MainLayout />
+                    </CallProvider>
+                  </ChatProvider>
+                </ProtectedRoutes>
+              }
+            >
               <Route index element={null} />
               <Route path="profile" element={null} />
               <Route path="setting" element={null} />
