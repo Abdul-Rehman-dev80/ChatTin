@@ -5,11 +5,13 @@ import "./src/Model/User.js";
 import "./src/Model/Conversation.js";
 import "./src/Model/ConversationMember.js";
 import "./src/Model/Message.js";
+import "./src/Model/Call.js";
 import "./associations.js";
 import User from "./src/Model/User.js";
 import Conversation from "./src/Model/Conversation.js";
 import ConversationMember from "./src/Model/ConversationMember.js";
 import Message from "./src/Model/Message.js";
+import Call from "./src/Model/Call.js";
 
 dotenv.config();
 
@@ -74,6 +76,7 @@ const createDummyData = async () => {
     console.log("🗑️  Clearing existing data...");
     await Message.destroy({ where: {}, force: true });
     await ConversationMember.destroy({ where: {}, force: true });
+    await Call.destroy({ where: {}, force: true });
     await Conversation.destroy({ where: {}, force: true });
     await User.destroy({ where: {}, force: true });
     console.log("✅ Existing data cleared");
@@ -216,11 +219,66 @@ const createDummyData = async () => {
     }
     console.log(`✅ Created ${messages.length} messages`);
 
+    // Create call logs (between existing users in their conversations)
+    console.log("📞 Creating call logs...");
+    const now = new Date();
+    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+    const callLogs = [
+      {
+        conversationId: conv1.id,
+        callerUserId: createdUsers[0].id, // Alice
+        calleeUserId: createdUsers[1].id, // Bob
+        status: "ended",
+        startedAt: oneHourAgo,
+        endedAt: new Date(oneHourAgo.getTime() + 5 * 60 * 1000), // 5 min call
+      },
+      {
+        conversationId: conv2.id,
+        callerUserId: createdUsers[0].id, // Alice
+        calleeUserId: createdUsers[2].id, // Charlie
+        status: "rejected",
+        startedAt: yesterday,
+        endedAt: yesterday,
+      },
+      {
+        conversationId: conv3.id,
+        callerUserId: createdUsers[1].id, // Bob
+        calleeUserId: createdUsers[3].id, // Diana
+        status: "ended",
+        startedAt: new Date(yesterday.getTime() + 2 * 60 * 60 * 1000),
+        endedAt: new Date(yesterday.getTime() + 2 * 60 * 60 * 1000 + 12 * 60 * 1000), // 12 min
+      },
+      {
+        conversationId: conv4.id,
+        callerUserId: createdUsers[2].id, // Charlie
+        calleeUserId: createdUsers[4].id, // Eve
+        status: "ended",
+        startedAt: new Date(now.getTime() - 30 * 60 * 1000), // 30 min ago
+        endedAt: new Date(now.getTime() - 25 * 60 * 1000), // 5 min call
+      },
+      {
+        conversationId: conv5.id,
+        callerUserId: createdUsers[3].id, // Diana
+        calleeUserId: createdUsers[0].id, // Alice
+        status: "rejected",
+        startedAt: new Date(yesterday.getTime() + 8 * 60 * 60 * 1000),
+        endedAt: new Date(yesterday.getTime() + 8 * 60 * 60 * 1000),
+      },
+    ];
+
+    for (const callData of callLogs) {
+      await Call.create(callData);
+    }
+    console.log(`✅ Created ${callLogs.length} call logs`);
+
     console.log("\n🎉 Seed completed successfully!");
     console.log("\n📋 Summary:");
     console.log(`   - Users: ${createdUsers.length}`);
     console.log(`   - Conversations: ${conversations.length}`);
     console.log(`   - Messages: ${messages.length}`);
+    console.log(`   - Call logs: ${callLogs.length}`);
     console.log("\n💡 You can now login with any of these accounts:");
     console.log("   Phone: +1234567890, Password: password123 (Alice)");
     console.log("   Phone: +1234567891, Password: password123 (Bob)");

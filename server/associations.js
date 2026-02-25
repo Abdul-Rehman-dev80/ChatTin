@@ -1,3 +1,4 @@
+import Call from "./src/Model/Call.js";
 import Conversation from "./src/Model/Conversation.js";
 import ConversationMember from "./src/Model/ConversationMember.js";
 import Message from "./src/Model/Message.js";
@@ -39,3 +40,10 @@ Message.belongsTo(Conversation, { foreignKey: "conversationId" });
 
 User.hasMany(Message, { foreignKey: "senderId", as: "sentMessages" });
 Message.belongsTo(User, { foreignKey: "senderId", as: "sender" });
+
+// --- Calls ---
+Conversation.hasMany(Call, { foreignKey: "conversationId", as: "calls" });
+User.hasMany(Call, { foreignKey: "callerUserId", as: "calls" });
+Call.belongsTo(Conversation, { foreignKey: "conversationId", as: "conversation" });
+Call.belongsTo(User, { foreignKey: "callerUserId", as: "caller" });
+Call.belongsTo(User, { foreignKey: "calleeUserId", as: "callee" });

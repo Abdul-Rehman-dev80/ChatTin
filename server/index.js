@@ -6,6 +6,7 @@ import "./src/Model/User.js";
 import "./src/Model/Conversation.js";
 import "./src/Model/ConversationMember.js";
 import "./src/Model/Message.js";
+import "./src/Model/Call.js";
 import "./associations.js";
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -13,6 +14,7 @@ import router from "./src/Routes/UserRoute.js";
 import socketAuth from "./src/Middleware/authMiddleware.js";
 import conversationRouter from "./src/Routes/ConversationRoute.js";
 import messageRouter from "./src/Routes/messageRoute.js";
+import callRouter from "./src/Routes/callRoute.js";
 import User from "./src/Model/User.js";
 import { registerCallHandlers } from "./src/socket/callHandlers.js";
 
@@ -50,6 +52,7 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api", router);
 app.use("/api/", conversationRouter);
 app.use("/api/", messageRouter);
+app.use("/api/", callRouter);
 
 io.use(socketAuth);
 
@@ -88,7 +91,7 @@ io.on("connection", async (socket) => {
 (async function startServer() {
   try {
     await dbConnectionCheck();
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ force: false, alter: true });
     httpServer.listen(PORT, "0.0.0.0", () => {
       console.log(`Server running on http://localhost:${PORT}`);
       console.log(`LAN: use http://YOUR_PC_IP:${PORT} from other devices (set CLIENT_URL & VITE_SERVER_URL to that IP)`);
