@@ -1,11 +1,12 @@
 import axios from "axios";
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:3000";
-const API_BASE_URL = `${SERVER_URL}/api`;
 export { SERVER_URL };
 
+// Use a relative base URL so Vite's dev proxy (and ngrok HTTPS) can forward
+// requests to the backend without mixed content or CORS issues.
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: "/api",
 });
 
 // Add a request interceptor

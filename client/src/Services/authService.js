@@ -1,16 +1,12 @@
-import axios from "axios";
 import api from "./axiosInstance.js";
 
-const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:3000";
-const API_BASE_URL = `${SERVER_URL}/api`;
-
 export const loginUser = async (userData) => {
-  const res = await axios.post(`${API_BASE_URL}/login`, userData);
+  const res = await api.post("/login", userData);
   return res.data;
 };
 
 export const registerUser = async (userData) => {
-  const res = await axios.post(`${API_BASE_URL}/register`, userData);
+  const res = await api.post("/register", userData);
   return res.data;
 };
 

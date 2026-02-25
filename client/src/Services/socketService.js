@@ -1,15 +1,20 @@
 import { io } from "socket.io-client";
 
 /**
- * Creates a socket connection with the current token from localStorage
+ * Creates a socket connection with the current token from localStorage.
+ *
+ * IMPORTANT: We intentionally connect to the current origin ("/") so that:
+ * - In dev, Vite/localhost handles the request and proxies /socket.io to the API server.
+ * - Over ngrok HTTPS, the browser only ever talks to the HTTPS origin, avoiding mixed content + CORS.
+ *
+ * Vite's dev server must proxy `/socket.io` to the backend.
  * @returns {import("socket.io-client").Socket} Socket instance
  */
-const getSocketUrl = () => import.meta.env.VITE_SERVER_URL || "http://localhost:3000";
-
 const createSocket = () => {
   const token = localStorage.getItem("chat_token");
-  return io(getSocketUrl(), {
+  return io("/", {
     autoConnect: false,
+    path: "/socket.io",
     auth: {
       token: token || null,
     },

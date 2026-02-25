@@ -8,4 +8,21 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    host: true,
+    port: 5173,
+    allowedHosts: ['unrecounted-conversationally-mireille.ngrok-free.dev'],
+    proxy: {
+      '/api': {
+        target: 'http://192.168.0.110:3000',
+        changeOrigin: true,
+      },
+      // Proxy Socket.IO (HTTP long-polling + WebSocket) through Vite as well
+      '/socket.io': {
+        target: 'http://192.168.0.110:3000',
+        changeOrigin: true,
+        ws: true,
+      },
+    },
+  },
 })
