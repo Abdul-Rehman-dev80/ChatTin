@@ -161,6 +161,7 @@ export function CallProvider({ children }) {
     remoteUser,
     incomingCall,
     remoteStream,
+    setRemoteStream,
     // Refs for WebRTC (Phase 3)
     localStreamRef,
     peerConnectionRef,
